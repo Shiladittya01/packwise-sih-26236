@@ -1,0 +1,117 @@
+{
+  "checked_date": "2026-09-24",
+  "sources": [
+    {
+      "id": "fdc_food_profiles",
+      "name": "USDA FoodData Central records queried for illustrative food-composition anchors",
+      "source": "USDA Agricultural Research Service",
+      "url": "https://fdc.nal.usda.gov/",
+      "license": "CC0 1.0 / U.S. public domain",
+      "rows_used": 4,
+      "columns_used": ["fdcId", "description", "dataType", "Water (g/100 g)", "Total lipid (fat) (g/100 g)"],
+      "records": [
+        {"fdcId": 170457, "description": "Tomatoes, red, ripe, raw, year round average", "water": 94.5, "fat": 0.2},
+        {"fdcId": 169677, "description": "Snacks, potato chips, plain, salted", "water": 1.86, "fat": 34.0},
+        {"fdcId": 746782, "description": "Milk, whole, 3.25% milkfat, with added vitamin D", "water": 88.1, "fat": 3.2},
+        {"fdcId": 172420, "description": "Lentils, raw", "water": 8.26, "fat": 1.06}
+      ],
+      "relevance": "Only illustrative nutrient centers; these data have no packaging recommendation labels and do not validate the generated target.",
+      "limitations": "Four specific database records are not population ranges. FDC does not provide pH, respiration, package properties or a food-to-material recommendation target. The biscuit and frozen-vegetable profiles use declared demonstration centers, not values attributed to these four records."
+    },
+    {
+      "id": "ucdavis_tomato",
+      "name": "Tomato Produce Fact Sheet",
+      "source": "UC Davis Postharvest Research and Extension Center",
+      "url": "https://postharvest.ucdavis.edu/produce-facts-sheets/tomato",
+      "license": "Educational use restrictions stated by UC Davis; source is linked and paraphrased, not redistributed",
+      "rows_used": 2,
+      "columns_used": ["temperature_C", "tomato respiration rate range (mL CO2/kg·h)"],
+      "values_used": [{"temperature_C": 10, "respiration_range": "7–8 (green ripening)"}, {"temperature_C": 15, "respiration_range": "12–15 (green ripening)"}],
+      "relevance": "Supports the two tomato respiration anchors and the relationship between respiration, temperature, gas exchange and produce handling.",
+      "limitations": "Rates vary by maturity and conditions. They are not packaging labels or package-specific respiration experiments."
+    },
+    {
+      "id": "food_packaging_permeability_dataset",
+      "name": "Food packaging permeability and composition dataset dedicated to text-mining",
+      "source": "Data in Brief / TRANSMAT Gold Standard Dataverse",
+      "url": "https://doi.org/10.1016/j.dib.2021.107135",
+      "license": "Article reports open access under CC BY 4.0; confirm the Dataverse file-level terms before redistributing files",
+      "rows": "The landing article describes annotations from 50 scientific articles; a dataset-row total is not stated on the inspected landing page.",
+      "files": "Four annotation files are described: three annotator files and one consensus Gold Standard.",
+      "columns_or_fields": ["packaging composition entities", "oxygen/carbon-dioxide/water permeability entities", "quantities and units", "annotated relations"],
+      "relevance": "Material/permeability literature data; not a dataset of food properties, storage conditions and recommended-material labels.",
+      "limitations": "Built for text mining / entity and relation extraction. It cannot directly train the requested supervised recommendation target. Not used as training data."
+    },
+    {
+      "id": "food_pack_mapper_2026",
+      "name": "Mapping gas permeability of sustainable packaging materials to link food barrier needs by clustering algorithms",
+      "source": "npj Science of Food article and Food-Pack-Mapper repository",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12996401/",
+      "data_url": "https://github.com/whps0620/Food-Pack-Mapper/tree/main",
+      "license": "Paper is open access; repository/data-package license was not confirmed during this inspection",
+      "rows": 295,
+      "columns": ["oxygen transmission rate", "water-vapor transmission rate", "temperature", "relative humidity", "material information"],
+      "relevance": "Useful published material-permeability observations across packaging literature.",
+      "limitations": "Material-property clustering, not observed food + route → selected packaging labels. Conditions are missing for a material subset. Not used as recommendation training data; no files copied."
+    },
+    {
+      "id": "produce_map_shelf_life_mendeley",
+      "name": "Data for: Predicting shelf life gain of fresh produce in Modified Atmosphere Packaging",
+      "source": "Mendeley Data, Valérie Guillard et al.",
+      "url": "https://data.mendeley.com/datasets/3fw8tcz6wv/1",
+      "license": "CC0 1.0",
+      "rows": "The inspected landing page does not state a row count.",
+      "columns": "The inspected landing page does not enumerate a table schema; it describes supplementary material for a basic MAP design model.",
+      "relevance": "Produce MAP/shelf-life design context.",
+      "limitations": "Does not expose a complete, general food-property + storage + recommended-material classification table on the landing page. Not used as training data."
+    },
+    {
+      "id": "r3pack_snack_simulation_2026",
+      "name": "R3PACK WP4 Dataset T4.5 - Shelf-life simulation results for snack products",
+      "source": "Fraunhofer IVV / Zenodo",
+      "url": "https://doi.org/10.5281/zenodo.21396864",
+      "license": "No license value was shown in the inspected record; no redistribution assumed",
+      "files": "One XLSX workbook (SimulationResults_Snacks.xlsx; 163.2 kB on the record page)",
+      "rows": "The record page does not state workbook row counts.",
+      "columns": "Record description says an Overview sheet includes simulation conditions/package properties and other tabs contain simulation outputs; exact schemas were not available on the inspected landing page.",
+      "relevance": "Promising snack-package simulation results with packaging and storage conditions.",
+      "limitations": "Model-simulation outputs for snacks, not experimental ground-truth material recommendations across foods. No verified material-class target. Not used as training data."
+    },
+    {
+      "id": "map_review_2016",
+      "name": "Modelling approaches for designing and evaluating the performance of modified atmosphere packaging (MAP) systems for fresh produce: A review",
+      "source": "Postharvest Biology and Technology review",
+      "url": "https://doi.org/10.1016/j.postharvbio.2016.05.005",
+      "license": "Literature source; cited and paraphrased",
+      "relevance": "Documents the coupled role of produce physiology/respiration, gas permeability and storage conditions in MAP design.",
+      "limitations": "A review of design approaches; not a label table for the prototype classifier."
+    },
+    {
+      "id": "map_review_2020",
+      "name": "Modified Atmosphere Packaging Technology of Fresh and Fresh-cut Produce and the Microbial Consequences—A Review",
+      "source": "International Journal of Food Microbiology review",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7089433/",
+      "license": "Open-access article; cited and paraphrased",
+      "relevance": "Explains that produce respiration, film permeability, temperature, package area/thickness and headspace jointly determine MAP; cautions about unsafe atmospheres.",
+      "limitations": "No general recommendation model labels; package design remains commodity- and condition-specific."
+    },
+    {
+      "id": "cereal_packaging_review_2022",
+      "name": "Cereal and Confectionary Packaging: Background, Application and Shelf-Life Extension",
+      "source": "Foods review",
+      "url": "https://doi.org/10.3390/foods11040517",
+      "license": "Open-access article; cited and paraphrased",
+      "relevance": "Discusses oxygen and water-vapor barriers for cereals/confectionery and the oxidation/crispness concerns for fried, oil-rich snacks.",
+      "limitations": "Qualitative design context; it does not supply a universally valid material property for an unspecified laminate."
+    },
+    {
+      "id": "perforated_film_meta_review",
+      "name": "A Meta-study of the Permeance of Perforated Packaging Films to Oxygen and Carbon Dioxide",
+      "source": "University College Cork research publication",
+      "url": "https://doi.org/10.1016/j.postharvbio.2020.111121",
+      "license": "Literature source; cited and paraphrased",
+      "relevance": "Supports treating perforation-dependent gas permeance separately from an unperforated base-film OTR.",
+      "limitations": "Does not set a universal perforation design for the prototype foods."
+    }
+  ]
+}

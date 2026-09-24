@@ -1,0 +1,59 @@
+{
+  "features": [
+    "commodity",
+    "moisture_content",
+    "fat_oil_content",
+    "respiration_rate",
+    "required_shelf_life",
+    "storage_temperature",
+    "storage_humidity",
+    "storage_condition",
+    "transport_condition"
+  ],
+  "accepted_request_fields": [
+    "commodity",
+    "moisture_content",
+    "fat_oil_content",
+    "ph",
+    "respiration_rate",
+    "required_shelf_life",
+    "storage_temperature",
+    "storage_humidity",
+    "storage_condition",
+    "transport_condition"
+  ],
+  "validated_but_not_used_by_model": {
+    "ph": "No defensible pH-to-material-class label rule was found for these curated classes; pH is validated, stored in the dataset and echoed by the API but excluded from the classifier to prevent commodity-profile proxy leakage."
+  },
+  "numeric_features": [
+    "moisture_content",
+    "fat_oil_content",
+    "respiration_rate",
+    "required_shelf_life",
+    "storage_temperature",
+    "storage_humidity"
+  ],
+  "categorical_features": [
+    "commodity",
+    "storage_condition",
+    "transport_condition"
+  ],
+  "target": "recommended_packaging_material",
+  "api_field_mapping": {
+    "commodity": "commodity",
+    "moisture": "moisture_content",
+    "fat": "fat_oil_content",
+    "ph": "ph",
+    "respiration_rate": "respiration_rate",
+    "shelf_life": "required_shelf_life",
+    "temperature": "storage_temperature",
+    "humidity": "storage_humidity",
+    "storage_condition": "storage_condition",
+    "transport_condition": "transport_condition"
+  },
+  "encoding": "OneHotEncoder(handle_unknown='ignore')",
+  "numeric_preprocessing": "median imputation then StandardScaler, fitted inside cross-validation/training pipeline",
+  "missing_values_in_generated_data": 0,
+  "target_is_experimental_ground_truth": false,
+  "label_rules": "ml/training/generate_dataset.py::LABEL_RULES / assign_label"
+}

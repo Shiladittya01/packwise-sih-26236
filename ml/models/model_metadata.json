@@ -1,0 +1,391 @@
+{
+  "model_name": "random_forest",
+  "model_type": "RandomForestClassifier",
+  "model_version": "prototype-1.0",
+  "trained_at_utc": "2026-09-24T15:32:16.906974+00:00",
+  "dataset_path": "datasets/processed/packwise_research_curated_v1.csv",
+  "dataset_rows": 295,
+  "input_features": [
+    "commodity",
+    "moisture_content",
+    "fat_oil_content",
+    "respiration_rate",
+    "required_shelf_life",
+    "storage_temperature",
+    "storage_humidity",
+    "storage_condition",
+    "transport_condition"
+  ],
+  "accepted_request_fields": [
+    "commodity",
+    "moisture_content",
+    "fat_oil_content",
+    "ph",
+    "respiration_rate",
+    "required_shelf_life",
+    "storage_temperature",
+    "storage_humidity",
+    "storage_condition",
+    "transport_condition"
+  ],
+  "validated_but_not_used_by_model": [
+    "ph"
+  ],
+  "target": "recommended_packaging_material",
+  "classes": [
+    "bopp_cpp_pouch",
+    "breathable_pe_film",
+    "foil_laminate",
+    "freezer_pe_bag",
+    "hdpe_bottle",
+    "metallized_laminate",
+    "microperforated_polyolefin",
+    "woven_pp_pe_liner_sack"
+  ],
+  "class_counts": {
+    "bopp_cpp_pouch": 18,
+    "breathable_pe_film": 4,
+    "foil_laminate": 48,
+    "freezer_pe_bag": 36,
+    "hdpe_bottle": 36,
+    "metallized_laminate": 72,
+    "microperforated_polyolefin": 12,
+    "woven_pp_pe_liner_sack": 69
+  },
+  "input_ranges_by_commodity": {
+    "biscuits": {
+      "moisture_content": [
+        4.0,
+        4.0
+      ],
+      "fat_oil_content": [
+        12.0,
+        12.0
+      ],
+      "respiration_rate": [
+        0.0,
+        0.0
+      ],
+      "required_shelf_life": [
+        30.0,
+        180.0
+      ],
+      "storage_temperature": [
+        20.0,
+        25.0
+      ],
+      "storage_humidity": [
+        40.0,
+        80.0
+      ]
+    },
+    "frozen_vegetables": {
+      "moisture_content": [
+        80.0,
+        80.0
+      ],
+      "fat_oil_content": [
+        1.0,
+        1.0
+      ],
+      "respiration_rate": [
+        0.0,
+        0.0
+      ],
+      "required_shelf_life": [
+        90.0,
+        365.0
+      ],
+      "storage_temperature": [
+        -18.0,
+        -12.0
+      ],
+      "storage_humidity": [
+        60.0,
+        90.0
+      ]
+    },
+    "lentils": {
+      "moisture_content": [
+        8.26,
+        8.26
+      ],
+      "fat_oil_content": [
+        1.06,
+        1.06
+      ],
+      "respiration_rate": [
+        0.0,
+        0.0
+      ],
+      "required_shelf_life": [
+        90.0,
+        365.0
+      ],
+      "storage_temperature": [
+        20.0,
+        30.0
+      ],
+      "storage_humidity": [
+        40.0,
+        80.0
+      ]
+    },
+    "pasteurized_milk": {
+      "moisture_content": [
+        88.1,
+        88.1
+      ],
+      "fat_oil_content": [
+        3.2,
+        3.2
+      ],
+      "respiration_rate": [
+        0.0,
+        0.0
+      ],
+      "required_shelf_life": [
+        5.0,
+        10.0
+      ],
+      "storage_temperature": [
+        2.0,
+        8.0
+      ],
+      "storage_humidity": [
+        60.0,
+        75.0
+      ]
+    },
+    "potato_chips": {
+      "moisture_content": [
+        1.86,
+        1.86
+      ],
+      "fat_oil_content": [
+        34.0,
+        34.0
+      ],
+      "respiration_rate": [
+        0.0,
+        0.0
+      ],
+      "required_shelf_life": [
+        30.0,
+        270.0
+      ],
+      "storage_temperature": [
+        20.0,
+        25.0
+      ],
+      "storage_humidity": [
+        40.0,
+        80.0
+      ]
+    },
+    "tomatoes": {
+      "moisture_content": [
+        94.5,
+        94.5
+      ],
+      "fat_oil_content": [
+        0.2,
+        0.2
+      ],
+      "respiration_rate": [
+        7.5,
+        13.5
+      ],
+      "required_shelf_life": [
+        7.0,
+        14.0
+      ],
+      "storage_temperature": [
+        10.0,
+        15.0
+      ],
+      "storage_humidity": [
+        90.0,
+        95.0
+      ]
+    }
+  },
+  "majority_class_baseline": 0.2440677966101695,
+  "cv_folds": 4,
+  "cross_validation": {
+    "logistic_regression": {
+      "accuracy": {
+        "mean": 0.942197334320622,
+        "std": 0.03417404664575915
+      },
+      "precision_macro": {
+        "mean": 0.900920464339582,
+        "std": 0.05774028988916646
+      },
+      "recall_macro": {
+        "mean": 0.9291768790849674,
+        "std": 0.05137879217466054
+      },
+      "f1_macro": {
+        "mean": 0.8941801217441634,
+        "std": 0.07033962586043546
+      }
+    },
+    "random_forest": {
+      "accuracy": {
+        "mean": 0.9931506849315068,
+        "std": 0.01186336169567724
+      },
+      "precision_macro": {
+        "mean": 0.9905427631578947,
+        "std": 0.016380414709738545
+      },
+      "recall_macro": {
+        "mean": 0.9903492647058824,
+        "std": 0.016715563859809927
+      },
+      "f1_macro": {
+        "mean": 0.9903959357084358,
+        "std": 0.016634727312147355
+      }
+    },
+    "gradient_boosting": {
+      "accuracy": {
+        "mean": 0.9931506849315068,
+        "std": 0.01186336169567724
+      },
+      "precision_macro": {
+        "mean": 0.9791666666666666,
+        "std": 0.03608439182435163
+      },
+      "recall_macro": {
+        "mean": 0.9791666666666666,
+        "std": 0.03608439182435163
+      },
+      "f1_macro": {
+        "mean": 0.96875,
+        "std": 0.05412658773652741
+      }
+    }
+  },
+  "holdout": {
+    "accuracy": 0.9846153846153847,
+    "precision_macro": 0.9375,
+    "recall_macro": 0.9583333333333333,
+    "f1_macro": 0.9333333333333333,
+    "test_rows": 65,
+    "train_rows": 230,
+    "split_seed": 42,
+    "confusion_matrix_labels": [
+      "bopp_cpp_pouch",
+      "breathable_pe_film",
+      "foil_laminate",
+      "freezer_pe_bag",
+      "hdpe_bottle",
+      "metallized_laminate",
+      "microperforated_polyolefin",
+      "woven_pp_pe_liner_sack"
+    ],
+    "confusion_matrix": [
+      [
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        10,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        8,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        8,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        16,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        15
+      ]
+    ]
+  },
+  "feature_importance_method": "tree impurity importance aggregated by source feature",
+  "feature_importance": {
+    "commodity": 0.21557964708954758,
+    "moisture_content": 0.09379774077622692,
+    "fat_oil_content": 0.10427818390740214,
+    "respiration_rate": 0.05891612101715028,
+    "required_shelf_life": 0.1971338875573511,
+    "storage_temperature": 0.09458010862496283,
+    "storage_humidity": 0.04214933836391434,
+    "storage_condition": 0.1132358075594587,
+    "transport_condition": 0.080329165103986
+  },
+  "scikit_learn_version": "1.9.1",
+  "limitations": [
+    "All target labels are deterministic research-derived curation rules, not experimentally observed packaging decisions.",
+    "Metrics quantify how well candidate estimators reproduce this synthetic rule grid; they are not real-food accuracy or scientific validation.",
+    "The structured grid contains one demonstration nutrient/pH center for several commodities; changed real measurements may be outside the training distribution.",
+    "No confidence percentage is displayed because class probabilities are not calibrated against experimental outcomes."
+  ]
+}
