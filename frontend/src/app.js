@@ -257,7 +257,7 @@ document.addEventListener('submit', async event => {
     respiration_rate: numeric('respiration_rate'), shelf_life: numeric('shelf_life'), temperature: numeric('temperature'),
     humidity: numeric('humidity'), storage_condition: values.get('storage_condition'), transport_condition: values.get('transport_condition')
   };
-  state.draft = { ...state.draft, ...payload, id: selection === 'custom' ? 'custom' : scenario.id, customCommodityName };
+  state.draft = { ...state.draft, ...payload, id: selection === 'custom' ? 'custom' : scenario.id, customCommodityName: customFoodName };
   state.errors = {}; state.submitting = true; render();
   try {
     state.result = await apiPost('/api/recommend', payload);
