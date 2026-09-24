@@ -119,7 +119,7 @@ Other endpoints:
 - `GET /api/materials` — qualitative packaging profiles with research links.
 - `GET /api/model-card` — actual training metadata, class counts, CV/holdout metrics and confusion matrix.
 
-Invalid/missing fields, unsupported commodities, impossible content sums and storage/temperature mismatches return HTTP 422. Model/database load problems return HTTP 503; inference/server errors return structured JSON errors. CORS is configured from `PACKWISE_ALLOWED_ORIGINS`.
+Invalid/missing fields, unprefixed unsupported commodities, impossible content sums and storage/temperature mismatches return HTTP 422. The website also offers an explicit custom-food field; it submits the name as `custom:<name>`. This runs the actual classifier with an unseen commodity category, which the fitted one-hot encoder ignores. The result is marked `out_of_training_scope`, has no confidence, no curated alternatives, and always requires expert review. It is an exploratory model output, not a food-specific recommendation. Model/database load problems return HTTP 503; inference/server errors return structured JSON errors. CORS is configured from `PACKWISE_ALLOWED_ORIGINS`.
 
 ## Retraining
 

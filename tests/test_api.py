@@ -84,6 +84,26 @@ def test_unsupported_commodity_is_rejected():
     assert "Unsupported commodity" in str(response.json())
 
 
+def test_explicit_custom_food_is_out_of_training_scope():
+    response = client.post("/api/recommend", json=tomato_payload(commodity="custom:Mango"))
+    assert response.status_code == 200
+    body = response.json()
+    assert body["input_echo"]["commodity"] == "custom:Mango"
+    assert body["prediction_scope"] == "out_of_training_scope"
+    assert body["confidence"] is None
+    assert body["suitability"]["status"] == "review_required"
+    assert body["alternatives"] == []
+    assert any("not represented in the training data" in warning for warning in body["warnings"])
+    assert "not present in training" in body["explanation"]
+    assert all(feature["feature"] != "commodity" for feature in body["important_features"])
+
+
+def test_custom_food_prefix_requires_a_name():
+    response = client.post("/api/recommend", json=tomato_payload(commodity="custom:"))
+    assert response.status_code == 422
+    assert "Enter a food name" in str(response.json())
+
+
 def test_cors_allows_local_vite_origin():
     response = client.options(
         "/api/recommend",

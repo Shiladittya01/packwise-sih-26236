@@ -53,10 +53,17 @@ class RecommendationRequest(BaseModel):
     @field_validator("commodity")
     @classmethod
     def normalize_supported_commodity(cls, value: str) -> str:
+        if value.casefold().startswith("custom:"):
+            name = value[len("custom:"):].strip()
+            if not name:
+                raise ValueError("Enter a food name after the custom: prefix.")
+            if any(ord(character) < 32 for character in name):
+                raise ValueError("Custom food names cannot contain control characters.")
+            return f"custom:{name}"
         canonical = FOOD_ALIASES.get(value.casefold())
         if canonical is None:
             accepted = ", ".join(info["name"] for info in FOODS.values())
-            raise ValueError(f"Unsupported commodity. Prototype commodities: {accepted}.")
+            raise ValueError(f"Unsupported commodity. Use a supported prototype commodity or explicitly prefix a custom food name with 'custom:'. Supported: {accepted}.")
         return canonical
 
     @model_validator(mode="after")
@@ -203,7 +210,7 @@ def make_model_row(request: RecommendationRequest):
 def model_feature_explanations(row):
     importance = (_metadata or {}).get("feature_importance", {})
     feature_map = {
-        "commodity": ("Food commodity", FOODS[row["commodity"]]["name"]),
+        "commodity": ("Food commodity", FOODS[row["commodity"]]["name"] if row["commodity"] in FOODS else row["commodity"][len("custom:"):]),
         "moisture_content": ("Moisture content", f"{row['moisture_content']:g}%"),
         "fat_oil_content": ("Fat / oil content", f"{row['fat_oil_content']:g}%"),
         "ph": ("pH", f"{row['ph']:g}"),
@@ -223,6 +230,8 @@ def model_feature_explanations(row):
 
 def domain_warnings(row):
     warnings = []
+    if row["commodity"].startswith("custom:"):
+        warnings.append("This custom food was not represented in the training data. One-hot encoding ignores its unseen commodity category; the model output uses other submitted fields and is exploratory only, not a validated packaging recommendation.")
     ranges = (_metadata or {}).get("input_ranges_by_commodity", {}).get(row["commodity"], {})
     for feature, value in row.items():
         bounds = ranges.get(feature)
@@ -243,12 +252,13 @@ def recommend(request: RecommendationRequest):
         model_input = pd.DataFrame([row])
         prediction = str(_pipeline.predict(model_input)[0])
         candidates = []
+        is_custom_food = row["commodity"].startswith("custom:")
         if hasattr(_pipeline, "predict_proba"):
             classes = list(_pipeline.classes_)
             raw_probabilities = _pipeline.predict_proba(model_input)[0]
             for class_name, _probability in sorted(zip(classes, raw_probabilities), key=lambda pair: pair[1], reverse=True):
                 profile = next((item for item in _materials["materials"] if item["id"] == str(class_name)), None)
-                if profile and row["commodity"] in profile["typical_applications"] and profile["id"] != prediction:
+                if not is_custom_food and profile and row["commodity"] in profile["typical_applications"] and profile["id"] != prediction:
                     candidates.append(with_references(profile))
                 if len(candidates) == 2:
                     break
@@ -256,19 +266,29 @@ def recommend(request: RecommendationRequest):
         if material is None:
             raise RuntimeError(f"Predicted target {prediction!r} is not in the packaging database.")
         material = with_references(material)
-        supported_application = row["commodity"] in material["typical_applications"]
+        supported_application = not is_custom_food and row["commodity"] in material["typical_applications"]
         suitability = {
             "status": "preliminary_candidate" if supported_application else "review_required",
-            "summary": "The model-selected class appears in this prototype's curated application list. This is a shortlist for expert review, not a validated packaging specification." if supported_application else "The trained model returned a class outside the curated application list for this commodity. Do not use it without expert review.",
-            "basis": "Rule-based post-prediction suitability check against the packaging database's stated application list; separate from the ML class prediction.",
+            "summary": "The model-selected class appears in this prototype's curated application list. This is a shortlist for expert review, not a validated packaging specification." if supported_application else "This custom food has no training examples or curated application mapping. The returned model class is exploratory only; do not treat it as a recommendation without expert assessment and testing.",
+            "basis": "Rule-based post-prediction suitability check against the packaging database's stated application list; the custom food has no matching curated entry.",
         }
         important = model_feature_explanations(row)
+        if is_custom_food:
+            important = [item for item in important if item["feature"] != "commodity"]
         lead = ", ".join(f"{item['label']} ({item['global_importance']:.0%} global importance)" for item in important[:3]) or "no exposed feature-importance data"
-        explanation = (
-            f"The trained {(_metadata or {}).get('model_name', 'classifier')} model predicts {material['name']} for {FOODS[row['commodity']]['name']} from the submitted food and handling inputs. "
-            f"Across the training grid, the highest global feature importances were {lead}. "
-            "Those values describe overall model behavior, not causal evidence for this individual package. The class label comes from a research-derived synthetic/curated prototype dataset, not measured package trials."
-        )
+        if is_custom_food:
+            display_name = row["commodity"][len("custom:"):]
+            explanation = (
+                f"The trained {(_metadata or {}).get('model_name', 'classifier')} returned {material['name']} for the submitted profile named {display_name!r}, but this food category was not present in training. "
+                "The fitted one-hot encoder ignores the unseen commodity category, so this exploratory output is based on the remaining encoded inputs and must not be interpreted as a food-specific recommendation. "
+                f"Across supported training profiles, the highest global feature importances were {lead}. These are global associations, not causal evidence or a per-case explanation."
+            )
+        else:
+            explanation = (
+                f"The trained {(_metadata or {}).get('model_name', 'classifier')} model predicts {material['name']} for {FOODS[row['commodity']]['name']} from the submitted food and handling inputs. "
+                f"Across the training grid, the highest global feature importances were {lead}. "
+                "Those values describe overall model behavior, not causal evidence for this individual package. The class label comes from a research-derived synthetic/curated prototype dataset, not measured package trials."
+            )
         warnings = domain_warnings(row)
         if row["commodity"] in ("tomatoes", "pasteurized_milk", "frozen_vegetables"):
             warnings.append("Packaging does not establish food safety or a use-by date. Maintain the commodity's validated handling and temperature controls.")
@@ -290,6 +310,7 @@ def recommend(request: RecommendationRequest):
             "warnings": warnings,
             "input_echo": request.model_dump(),
             "prediction_source": "trained supervised classifier; target labels are synthetic/curated research-derived rules",
+            "prediction_scope": "out_of_training_scope" if is_custom_food else "supported_prototype_commodity",
             "model": {"name": (_metadata or {}).get("model_name"), "version": (_metadata or {}).get("model_version")},
         }
     except HTTPException:

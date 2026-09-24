@@ -49,10 +49,13 @@ function selectField(name, label, options, help = '') {
 }
 function renderAnalyze() {
   const selected = scenarios.find(s => s.id === state.draft.id);
+  const customFood = state.draft.id === 'custom';
+  const customName = state.draft.customCommodityName || '';
   return `<div class="page-title"><div><p class="eyebrow">LET’S FIND THE RIGHT FIT</p><h1>A little about your food.</h1><p class="muted">Use measured values where possible. The API sends this profile through the trained model.</p></div>${badge('10 REQUEST FIELDS', 'outline')}</div>
   <div class="scenario-strip"><span>QUICK START</span>${scenarios.map(s => `<button class="scenario-pill ${state.draft.id === s.id ? 'selected' : ''}" data-action="demo-${s.id}">${foodArt(s.icon, 27)}${esc(s.short)}</button>`).join('')}</div>
   <div class="analysis-layout"><form id="analysis-form" novalidate><div class="form-card"><div class="card-heading"><span class="number-icon">01</span><div><h2>Food profile</h2><p>The properties that shape packaging needs.</p></div>${icon('leaf', 22)}</div><div class="form-grid">
-    <div class="field"><label for="commodity-select">Food commodity</label><select id="commodity-select" name="commoditySelect" required>${scenarios.map(s => `<option value="${s.id}" ${state.draft.id === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}</select></div>
+    <div class="field"><label for="commodity-select">Food commodity</label><select id="commodity-select" name="commoditySelect" required>${scenarios.map(s => `<option value="${s.id}" ${state.draft.id === s.id ? 'selected' : ''}>${esc(s.name)}</option>`).join('')}<option value="custom" ${customFood ? 'selected' : ''}>Custom food…</option></select></div>
+      ${customFood ? `<div class="field full custom-food-field"><label for="custom-food-name">Food name</label><input id="custom-food-name" name="customCommodityName" type="text" maxlength="73" required autocomplete="off" placeholder="For example, mango" value="${esc(customName)}"><span class="field-hint">Custom foods have no training examples or curated packaging mapping. The API can return an exploratory class for expert review only.</span></div>` : ''}
       ${field('moisture', 'Moisture content', '%', 0, 100, '.01', 'Mass percentage of water. This is not water activity and does not establish microbial safety.')}
       ${field('fat', 'Fat / oil content', '%', 0, 100, '.01', 'Mass percentage of fat or oil in the food formulation being packed.')}
     ${field('ph', 'pH level', 'pH', 0, 14, '.1', 'pH is passed to the model. It does not replace water-activity or food-safety assessment.')}
@@ -64,7 +67,12 @@ function renderAnalyze() {
     ${field('shelf_life', 'Desired shelf life', 'days', 1, 730, '1', 'A design target sent to the model, not a predicted or promised outcome.')}
     ${selectField('transport_condition', 'Transportation', { local: 'Local / gentle handling', long: 'Long-distance distribution', rough: 'Rough handling / bulk freight', cold: 'Temperature-controlled cold chain' })}
   </div></div><div class="form-submit"><div class="general-error" role="alert">${esc(state.errors.general || (Object.keys(state.errors).length ? 'Please review the highlighted fields.' : ''))}</div><div><button type="button" class="button secondary" data-action="reset">Reset values</button><button type="submit" class="button primary" id="analyze-button" ${state.submitting ? 'disabled aria-busy="true"' : ''}>${state.submitting ? '<span class="spinner"></span> Sending actual inputs…' : `${icon('spark', 18)} Get packaging recommendation ${icon('arrow', 17)}`}</button></div><small>${icon('shield', 13)} Values are sent to the configured Packwise API. No credentials are stored in the browser.</small></div></form>
-  <aside class="analysis-side"><div class="profile-preview"><div class="profile-food ${selected?.color || 'mint'}">${foodArt(selected?.icon || 'grain', 110)}</div>${badge('SUPPORTED DEMO PROFILE')}<h2>${esc(selected?.name || 'Select a commodity')}</h2><p>${esc(selected?.description || 'Choose one of the six commodities supported by this prototype.')}</p><div class="profile-divider"></div><h3>The response includes</h3><ul class="check-list">${['Trained model material prediction', 'Suitability check against the database', 'Global model input importance', 'Source-linked qualitative properties', 'Alternatives and limitations'].map(text => `<li>${icon('check', 15)}${text}</li>`).join('')}</ul></div><div class="info-note">${icon('info', 20)}<div><strong>Prototype data, clearly labeled.</strong><p>Training labels are curated from documented packaging principles, not measured package outcomes.</p></div></div><div class="plain-note">${icon('flask', 19)}<p>A decision-support shortlist only. Validate the food, package, process, transport and shelf life with qualified testing.</p></div></aside></div>`;
+  <aside class="analysis-side"><div class="profile-preview"><div class="profile-food ${selected?.color || 'mint'}">${foodArt(selected?.icon || 'grain', 110)}</div>${badge(customFood ? 'CUSTOM · OUT OF SCOPE' : 'SUPPORTED DEMO PROFILE', customFood ? 'amber' : '')}<h2>${esc(customFood ? customName || 'Custom food' : selected?.name || 'Select a commodity')}</h2><p>${esc(customFood ? 'The model has no examples for this food. Any returned class is exploratory and requires expert review.' : selected?.description || 'Choose one of the six commodities supported by this prototype.')}</p><div class="profile-divider"></div><h3>The response includes</h3><ul class="check-list">${['Trained model material prediction', 'Suitability check against the database', 'Global model input importance', 'Source-linked qualitative properties', 'Alternatives and limitations'].map(text => `<li>${icon('check', 15)}${text}</li>`).join('')}</ul></div><div class="info-note">${icon('info', 20)}<div><strong>Prototype data, clearly labeled.</strong><p>Training labels are curated from documented packaging principles, not measured package outcomes.</p></div></div><div class="plain-note">${icon('flask', 19)}<p>A decision-support shortlist only. Validate the food, package, process, transport and shelf life with qualified testing.</p></div></aside></div>`;
+}
+
+function commodityName(value) {
+  if (value?.startsWith('custom:')) return value.slice('custom:'.length);
+  return scenarios.find(item => item.apiCommodity === value)?.name || value;
 }
 
 function propertyValue(value) { return value == null || value === '' ? 'Not verified for this generic structure' : typeof value === 'string' ? value : JSON.stringify(value); }
@@ -75,7 +83,7 @@ function renderResults() {
   const result = state.result;
   if (!result) return `<div class="empty-state">${icon('spark', 40)}<h1>Your next great fit starts here.</h1><p>Send a supported food and its storage profile to the Packwise API to see the trained model response.</p>${btn('Start an analysis', 'new')}</div>`;
   const material = result.recommended_material, input = result.input_echo;
-  const scenario = scenarios.find(item => item.apiCommodity === input.commodity);
+  const isOutOfScope = result.prediction_scope === 'out_of_training_scope';
   const properties = [
     ['Thickness range', material.thickness_range_um == null ? 'Not verified for this generic structure' : `${material.thickness_range_um} µm`],
     ['Oxygen transmission rate (OTR)', propertyValue(material.otr)], ['Water-vapor transmission rate (WVTR)', propertyValue(material.wvtr)],
@@ -84,8 +92,8 @@ function renderResults() {
   ];
   const influences = result.important_features.map(feature => `<div class="factor"><div><span>${esc(feature.label)}<small class="muted">${esc(feature.value)} · global importance</small></span><strong>${Math.round(feature.global_importance * 100)}<small>%</small></strong></div><div class="progress-track" role="meter" aria-label="${esc(feature.label)} global model importance" aria-valuenow="${Math.round(feature.global_importance * 100)}" aria-valuemin="0" aria-valuemax="100"><span style="width:${Math.max(0, Math.min(100, feature.global_importance * 100))}%"></span></div></div>`).join('');
   const refs = material.references || [];
-  return `<div class="page-title result-title"><div><p class="eyebrow">TRAINED MODEL RESPONSE</p><h1>Packaging candidate for ${esc(scenario?.name || input.commodity)}.</h1><p class="muted">${input.temperature} °C ${esc(input.storage_condition)} storage <span class="middle-dot">·</span> ${input.shelf_life}-day target <span class="middle-dot">·</span> ${esc(input.transport_condition)} transport</p></div><div class="title-actions">${btn('Edit inputs', 'edit', 'secondary', 'edit')}<button class="icon-button bordered" data-action="export" aria-label="Download recommendation as JSON" title="Download complete JSON report">${icon('download')}</button><button class="icon-button bordered" data-action="print" aria-label="Print or save report as PDF" title="Print or save as PDF">${icon('print')}</button></div></div>
-  <div class="result-top"><section class="recommendation-hero"><div class="recommendation-copy">${badge(`${icon('check', 13)} ML PREDICTION`, 'lime')}<h2>${esc(material.name)}</h2><p>${esc(material.structure)}</p><div class="recommendation-tags"><span>${esc(material.family)}</span><span>${esc(material.abbreviation)}</span></div></div><div class="score-block"><strong>Confidence not reported</strong><small>${esc(result.confidence_note)}</small><small>Model: ${esc(result.model.name)} · ${esc(result.model.version)}</small></div><div class="recommendation-bottom">${icon('layers', 16)} Predicted material class <span>·</span> probabilities withheld</div></section><section class="reason-card"><span class="reason-icon">${icon('spark', 23)}</span><div class="section-heading"><h2>Suitability check</h2>${badge(result.suitability.status === 'preliminary_candidate' ? 'PRELIMINARY' : 'REVIEW REQUIRED', result.suitability.status === 'preliminary_candidate' ? 'outline' : 'amber')}</div><p>${esc(result.suitability.summary)}</p><small class="muted">${esc(result.suitability.basis)}</small></section></div>
+  return `<div class="page-title result-title"><div><p class="eyebrow">${isOutOfScope ? 'EXPLORATORY MODEL OUTPUT' : 'TRAINED MODEL RESPONSE'}</p><h1>Packaging candidate for ${esc(commodityName(input.commodity))}.</h1><p class="muted">${input.temperature} °C ${esc(input.storage_condition)} storage <span class="middle-dot">·</span> ${input.shelf_life}-day target <span class="middle-dot">·</span> ${esc(input.transport_condition)} transport</p></div><div class="title-actions">${btn('Edit inputs', 'edit', 'secondary', 'edit')}<button class="icon-button bordered" data-action="export" aria-label="Download recommendation as JSON" title="Download complete JSON report">${icon('download')}</button><button class="icon-button bordered" data-action="print" aria-label="Print or save report as PDF" title="Print or save as PDF">${icon('print')}</button></div></div>
+  <div class="result-top"><section class="recommendation-hero"><div class="recommendation-copy">${badge(isOutOfScope ? 'CUSTOM FOOD · OUT OF SCOPE' : `${icon('check', 13)} ML PREDICTION`, isOutOfScope ? 'amber' : 'lime')}<h2>${esc(material.name)}</h2><p>${esc(material.structure)}</p><div class="recommendation-tags"><span>${esc(material.family)}</span><span>${esc(material.abbreviation)}</span></div>${isOutOfScope ? `<p class="scope-warning">This food was not in the training data. Treat this model class as an exploratory output only; it is not a validated recommendation.</p>` : ''}</div><div class="score-block"><strong>Confidence not reported</strong><small>${esc(result.confidence_note)}</small><small>Model: ${esc(result.model.name)} · ${esc(result.model.version)}</small></div><div class="recommendation-bottom">${icon('layers', 16)} ${isOutOfScope ? 'Exploratory material class' : 'Predicted material class'} <span>·</span> probabilities withheld</div></section><section class="reason-card"><span class="reason-icon">${icon('spark', 23)}</span><div class="section-heading"><h2>Suitability check</h2>${badge(result.suitability.status === 'preliminary_candidate' ? 'PRELIMINARY' : 'REVIEW REQUIRED', result.suitability.status === 'preliminary_candidate' ? 'outline' : 'amber')}</div><p>${esc(result.suitability.summary)}</p><small class="muted">${esc(result.suitability.basis)}</small></section></div>
   <div class="results-grid"><section class="panel specs-panel"><div class="section-heading"><div><p class="eyebrow">DATABASE PROFILE</p><h2>Packaging properties</h2></div>${icon('layers', 22)}</div><div class="structure-block"><span>PROPOSED STRUCTURE</span><strong>${esc(material.structure)}</strong></div><dl class="spec-list">${properties.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl><p class="reference-note">${icon('info', 14)} Numeric values are omitted where this exact structure and test conditions are not supported by a verified source.</p></section>
   <section class="panel score-panel"><div class="section-heading"><div><p class="eyebrow">MODEL EXPLANATION</p><h2>Important input features</h2></div>${icon('chart', 22)}</div><p class="muted small-text">Global feature importance is aggregated from the trained model. It is not causal or specific to this individual food.</p><div class="factor-list">${influences || '<p class="muted">The selected model did not expose feature-importance values.</p>'}</div></section>
   <section class="panel map-panel"><div class="panel-icon mint">${icon('wind', 22)}</div><p class="eyebrow">WHY THIS CLASS</p><h2>Model explanation</h2><p>${esc(result.explanation)}</p><div class="soft-callout">${icon('info', 17)} ML class prediction and the post-prediction suitability check are separate steps.</div></section>
@@ -128,7 +136,13 @@ function render() {
 function setScenario(id) {
   const scenario = scenarios.find(item => item.id === id);
   if (!scenario) return;
+  state.customFoodName = '';
   state.draft = { ...scenario, commodity: scenario.apiCommodity };
+  state.errors = {};
+}
+function selectCommodity(id) {
+  if (id !== 'custom') { setScenario(id); return; }
+  state.draft = { ...state.draft, id: 'custom', commodity: `custom:${state.draft.customCommodityName || ''}` };
   state.errors = {};
 }
 function showDialog(title, content, wide = false) {
@@ -186,12 +200,21 @@ document.addEventListener('click', event => {
   else if (action === 'edit') {
     const input = state.result?.input_echo;
     if (input) {
+      const customFoodName = input.commodity.startsWith('custom:') ? input.commodity.slice('custom:'.length) : '';
       const scenario = scenarios.find(item => item.apiCommodity === input.commodity) || defaultInput();
-      state.draft = { ...scenario, commodity: input.commodity, moisture: input.moisture, fat: input.fat, ph: input.ph, respiration_rate: input.respiration_rate, shelf_life: input.shelf_life, temperature: input.temperature, humidity: input.humidity, storage_condition: input.storage_condition, transport_condition: input.transport_condition };
+      state.customFoodName = customFoodName;
+      state.draft = { ...scenario, id: customFoodName ? 'custom' : scenario.id, customCommodityName: customFoodName, commodity: input.commodity, moisture: input.moisture, fat: input.fat, ph: input.ph, respiration_rate: input.respiration_rate, shelf_life: input.shelf_life, temperature: input.temperature, humidity: input.humidity, storage_condition: input.storage_condition, transport_condition: input.transport_condition };
     }
     state.errors = {}; goto('analyze');
   }
-  else if (action === 'reset') { setScenario(state.draft.id); render(); notify('Demo values restored.'); }
+  else if (action === 'reset') {
+    if (state.draft.id === 'custom') {
+      const customCommodityName = state.draft.customCommodityName || '';
+      state.draft = { ...defaultInput(), id: 'custom', customCommodityName, commodity: `custom:${customCommodityName}` };
+      state.errors = {};
+    } else setScenario(state.draft.id);
+    render(); notify('Food profile values restored.');
+  }
   else if (action === 'theme') { state.theme = state.theme === 'light' ? 'dark' : 'light'; document.documentElement.dataset.theme = state.theme; try { localStorage.setItem('packwise-theme', state.theme); } catch {} render(); }
   else if (action === 'menu') { state.mobileMenu = !state.mobileMenu; $('.sidebar').classList.toggle('open', state.mobileMenu); target.setAttribute('aria-expanded', String(state.mobileMenu)); }
   else if (action === 'export') exportReport();
@@ -204,10 +227,14 @@ document.addEventListener('click', event => {
 });
 document.addEventListener('input', event => {
   if (event.target.closest('#analysis-form') && event.target.name !== 'commoditySelect') state.draft[event.target.name] = event.target.value;
+  if (event.target.name === 'customCommodityName') state.draft.commodity = `custom:${event.target.value.trim()}`;
   if (event.target.id === 'material-search') { state.query = event.target.value; $('#library-content').innerHTML = libraryCards(); }
 });
 document.addEventListener('change', event => {
-  if (event.target.id === 'commodity-select') { setScenario(event.target.value); render(); }
+  if (event.target.id === 'commodity-select') {
+    selectCommodity(event.target.value); render();
+    if (event.target.value === 'custom') $('#custom-food-name')?.focus();
+  }
   if (event.target.id === 'material-filter') { state.filter = event.target.value; $('#library-content').innerHTML = libraryCards(); }
   if (event.target.dataset.compare) {
     const id = event.target.dataset.compare;
@@ -222,13 +249,15 @@ document.addEventListener('submit', async event => {
   const form = event.target;
   if (!form.checkValidity()) { form.reportValidity(); return; }
   const values = new FormData(form), numeric = name => Number(values.get(name));
-  const scenario = scenarios.find(item => item.id === state.draft.id);
+  const selection = values.get('commoditySelect');
+  const scenario = scenarios.find(item => item.id === selection);
+  const customFoodName = String(values.get('customCommodityName') || '').trim();
   const payload = {
-    commodity: scenario.apiCommodity, moisture: numeric('moisture'), fat: numeric('fat'), ph: numeric('ph'),
+    commodity: selection === 'custom' ? `custom:${customFoodName}` : scenario.apiCommodity, moisture: numeric('moisture'), fat: numeric('fat'), ph: numeric('ph'),
     respiration_rate: numeric('respiration_rate'), shelf_life: numeric('shelf_life'), temperature: numeric('temperature'),
     humidity: numeric('humidity'), storage_condition: values.get('storage_condition'), transport_condition: values.get('transport_condition')
   };
-  state.draft = { ...state.draft, ...payload, id: scenario.id };
+  state.draft = { ...state.draft, ...payload, id: selection === 'custom' ? 'custom' : scenario.id, customCommodityName };
   state.errors = {}; state.submitting = true; render();
   try {
     state.result = await apiPost('/api/recommend', payload);
