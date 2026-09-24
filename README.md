@@ -144,16 +144,15 @@ The API tests cover multiple foods/condition changes, validation failures, missi
 
 ## Deployment
 
-Preferred production architecture: Vercel serves `frontend/`; Render runs the Python API from the repository root so it can load `ml/models/` and `packaging_database/`. `render.yaml`, `frontend/vercel.json`, and [`docs/deployment.md`](docs/deployment.md) contain the deployment setup. Deployment is not claimed complete: no provider credentials were available in the current workspace. The exact steps are documented.
+The website and API are deployed and connected to the private GitHub repository [`Shiladittya01/packwise-sih-26236`](https://github.com/Shiladittya01/packwise-sih-26236) on `main`.
 
-The destination is initialized as a local Git repository on `main`, with no remote or commit yet. After creating an empty GitHub repository, from `D:\Packwise Project` run:
+- Website: https://packwise-sih-26236.vercel.app
+- API: https://packwise-api-26236.onrender.com
+- Health check: https://packwise-api-26236.onrender.com/api/health
+- Vercel project root: `frontend`; `VITE_API_URL` points to the Render API.
+- Render runs the Python API from the repository root and allows the exact Vercel production origin through `PACKWISE_ALLOWED_ORIGINS`.
 
-```powershell
-git add -A
-git commit -m "Build Packwise research prototype"
-git remote add origin https://github.com/<account>/<repository>.git
-git push -u origin main
-```
+Production flow: browser → Vercel website → HTTPS Render API → validation and preprocessing → saved Random Forest pipeline → separate suitability check and packaging database → JSON response to the website. Vercel and Render are connected to GitHub for deployments from `main`. The current Render service uses the free instance, which can take about 50 seconds to wake after inactivity. See [`docs/deployment.md`](docs/deployment.md) for service settings and verification details.
 
 ## Limitations and future work
 
