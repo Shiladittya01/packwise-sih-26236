@@ -60,6 +60,9 @@ def load_foodon_reference() -> tuple[dict, frozenset[str]]:
 
 
 FOODON_REFERENCE, FOODON_NAMES = load_foodon_reference()
+# FoodOn includes the singular label "grape" but omits its everyday plural.
+# Keep this small input alias separate from the upstream reference snapshot.
+FOODON_INPUT_ALIASES = {"grapes": "grape"}
 FOOD_ALIASES = {
     normalize_food_name(alias.replace("_", " ")): key
     for key, info in FOODS.items()
@@ -75,7 +78,8 @@ def resolve_commodity(value: str) -> str:
         raise ValueError("Please enter a valid food commodity name.")
     if not explicit_custom and normalized in FOOD_ALIASES:
         return FOOD_ALIASES[normalized]
-    if normalized not in FOODON_NAMES:
+    reference_name = FOODON_INPUT_ALIASES.get(normalized, normalized)
+    if reference_name not in FOODON_NAMES:
         raise ValueError("Please enter a valid food commodity name.")
     # Keep a clear marker for a legitimate FoodOn term outside the prototype's
     # seven named training profiles. The classifier never receives this name.
