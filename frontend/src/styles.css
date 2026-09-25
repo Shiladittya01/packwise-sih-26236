@@ -202,7 +202,7 @@
   .help:hover>span,.help:focus>span { display:block; }
   .field-error { display:block; min-height:15px; margin-top:4px; font-size:10px; color:var(--danger); line-height:1.5; }
   .field-hint { display:block; margin-top:8px; color:var(--muted); font-size:10px; line-height:1.6; }
-  .scope-warning { margin-top:15px; padding:11px 13px; border-left:3px solid #b58b42; border-radius:4px 8px 8px 4px; background:#f4eedf; color:#654d23; font-size:11px; line-height:1.65; }
+  .scope-warning { margin-top:15px; padding:11px 13px; border-left:3px solid var(--warning-ink); border-radius:4px 8px 8px 4px; background:var(--warning); color:var(--warning-ink); font-size:11px; line-height:1.65; }
   .general-error { color:var(--danger); font-size:12px; margin-bottom:12px; }
   .general-error:empty { display:none; }
   .form-submit>div:not(.general-error) { display:flex; justify-content:space-between; gap:14px; }
@@ -231,6 +231,7 @@
   .recommendation-copy { align-self:center; }
   .recommendation-copy h2 { font-size:32px; letter-spacing:-1.1px; margin:18px 0 12px; }
   .recommendation-copy>p { font-size:12px; line-height:1.85; color:#c0cebb; max-width:350px; }
+  .recommendation-copy>p.scope-warning { color:var(--warning-ink); }
   .recommendation-tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:22px; }
   .recommendation-tags span { background:#ffffff0c; border:1px solid #ffffff20; padding:5px 9px; border-radius:5px; font-size:9px; color:#d2dfcc; }
   .score-block { display:flex; flex-direction:column; align-items:center; justify-content:center; }
