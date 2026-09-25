@@ -155,7 +155,7 @@ The website and API are deployed and connected to the private GitHub repository 
 - Vercel project root: `frontend`; `VITE_API_URL` points to the Render API.
 - Render runs the Python API from the repository root and allows the exact Vercel production origin through `PACKWISE_ALLOWED_ORIGINS`.
 
-Production flow: browser → Vercel website → HTTPS Render API → validation and preprocessing → saved classifier pipeline → separate suitability check and packaging database → JSON response to the website. Vercel and Render are connected to GitHub for deployments from `main`. The current Render service uses the free instance, which can take about 50 seconds to wake after inactivity. The production API is still on the prior artifact until the current working-tree changes are committed and deployed; see [`docs/deployment.md`](docs/deployment.md) for the live check and version details.
+Production flow: browser → Vercel website → HTTPS Render API → validation and preprocessing → saved classifier pipeline → separate suitability check and packaging database → JSON response to the website. Vercel and Render deploy from the existing GitHub `main` branch. Commit `1ef6ada` is live with model `prototype-2.0`; production health, CORS, valid unseen foods, invalid names and out-of-range warnings were checked on 2026-09-25. See [`docs/deployment.md`](docs/deployment.md) for the results.
 
 ## Limitations and future work
 

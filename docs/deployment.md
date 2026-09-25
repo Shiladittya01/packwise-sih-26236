@@ -31,10 +31,15 @@ The model, preprocessing pipeline, packaging database and FoodOn name-reference 
 
 ## Production flow and verification
 
-Browser → Vercel website → HTTPS Render API → validation and preprocessing → saved supervised model → separate suitability check → packaging database → JSON response → website.
+Browser → Vercel website → HTTPS Render API → validation and preprocessing → saved property-only supervised model → separate suitability check → packaging database → JSON response → website.
 
-Live check on 2026-09-25: the website returned HTTP 200 and its deployed JavaScript references the documented Render API URL; the API health endpoint returned HTTP 200 and reported `prototype-1.0` with 295 training rows; the Vercel-origin CORS preflight returned HTTP 200 with the exact allowed origin. The deployed JavaScript does not yet contain the team footer. Direct production requests also confirmed the current defect: `custom:jjjgjghghg` returned HTTP 200 with a material result, and `custom:Dragon Fruit` returned HTTP 200 but was marked `out_of_training_scope`.
+Commit `1ef6ada` was pushed to the existing `main` branch on 2026-09-25, and both providers deployed it. Live verification confirmed:
 
-The local working tree now contains the property-only `prototype-2.0` model, 331-row dataset, FoodOn name validation and updated website. These changes are not in the deployed services: they remain uncommitted on local `main`. After an approved commit/deployment, the expected health response is 331 rows and `prototype-2.0`; `custom:jjjgjghghg` should return HTTP 422, while `Dragon Fruit` with supported measured properties should return HTTP 200 with `prediction_scope: valid_unseen_commodity`. The local API tests cover these cases; production must be checked again after deployment.
+- The Vercel site returned HTTP 200; its JavaScript points to the Render API and contains `Built by 4Bit-Coders`.
+- The Render `/api/health` endpoint returned HTTP 200 with model `prototype-2.0`, 331 training rows, eight features, `commodity_name_used_by_model: false`, and the 12,655-term FoodOn reference.
+- The Vercel-origin CORS preflight returned HTTP 200 with the exact allowed origin.
+- Direct production requests for Apple, Banana and Dragon Fruit returned HTTP 200. Dragon Fruit was marked `valid_unseen_commodity` and returned a preliminary model candidate.
+- `custom:jjjgjghghg` and `abcxyz123` returned HTTP 422 without a material result. Invalid pH and humidity also returned HTTP 422.
+- A valid Dragon Fruit profile outside the training feature ranges returned HTTP 200 with extrapolation warnings.
 
 If the Vercel production hostname changes, update `PACKWISE_ALLOWED_ORIGINS` in Render to that exact origin and redeploy/restart the API. If the Render hostname changes, update Vercel's `VITE_API_URL` and redeploy the frontend.
