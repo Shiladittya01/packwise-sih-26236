@@ -1,6 +1,5 @@
 {
   "features": [
-    "commodity",
     "moisture_content",
     "fat_oil_content",
     "respiration_rate",
@@ -23,7 +22,8 @@
     "transport_condition"
   ],
   "validated_but_not_used_by_model": {
-    "ph": "No defensible pH-to-material-class label rule was found for these curated classes; pH is validated, stored in the dataset and echoed by the API but excluded from the classifier to prevent commodity-profile proxy leakage."
+    "commodity": "Used only for dataset provenance and application validation; the classifier cannot use food names, so an unseen validated food follows the same measured-feature pipeline.",
+    "ph": "No defensible pH-to-material-class label rule was found for these curated classes; pH is validated, stored in the dataset and echoed by the API but excluded from the classifier."
   },
   "numeric_features": [
     "moisture_content",
@@ -34,7 +34,6 @@
     "storage_humidity"
   ],
   "categorical_features": [
-    "commodity",
     "storage_condition",
     "transport_condition"
   ],

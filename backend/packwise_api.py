@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
+import unicodedata
 from pathlib import Path
 from typing import Literal
 from contextlib import asynccontextmanager
@@ -22,6 +24,7 @@ PIPELINE_PATH = ROOT / "ml" / "models" / "packwise_pipeline.joblib"
 METADATA_PATH = ROOT / "ml" / "models" / "model_metadata.json"
 DATABASE_PATH = ROOT / "packaging_database" / "materials.json"
 SOURCES_PATH = ROOT / "docs" / "research_sources.json"
+FOOD_REFERENCE_PATH = ROOT / "datasets" / "reference" / "foodon_food_commodities.json"
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
 logger = logging.getLogger("packwise.api")
 
@@ -32,39 +35,71 @@ FOODS = {
     "pasteurized_milk": {"name": "Pasteurized milk", "aliases": ["milk", "pasteurized milk"]},
     "frozen_vegetables": {"name": "Frozen vegetables", "aliases": ["frozen vegetable", "frozen vegetables", "frozen mixed vegetables"]},
     "lentils": {"name": "Dry lentils", "aliases": ["lentil", "lentils", "dry lentils"]},
+    "bananas": {"name": "Mature-green bananas", "aliases": ["banana", "bananas", "mature-green banana", "mature green bananas", "cavendish banana"]},
 }
-FOOD_ALIASES = {alias.casefold(): key for key, info in FOODS.items() for alias in [key, info["name"], *info["aliases"]]}
+
+
+def normalize_food_name(value: str) -> str:
+    """Normalize punctuation, case, accents and ontology qualifiers for lookup."""
+    normalized = unicodedata.normalize("NFKD", value)
+    normalized = "".join(character for character in normalized if not unicodedata.combining(character))
+    normalized = re.sub(r"\([^)]*\)", " ", normalized.casefold())
+    normalized = re.sub(r"[^a-z0-9]+", " ", normalized)
+    return " ".join(normalized.split())
+
+
+def load_foodon_reference() -> tuple[dict, frozenset[str]]:
+    reference = json.loads(FOOD_REFERENCE_PATH.read_text(encoding="utf-8"))
+    names = set()
+    for term in reference.get("terms", []):
+        for label in [term.get("label", ""), *term.get("aliases", [])]:
+            normalized = normalize_food_name(label)
+            if normalized:
+                names.add(normalized)
+    return reference, frozenset(names)
+
+
+FOODON_REFERENCE, FOODON_NAMES = load_foodon_reference()
+FOOD_ALIASES = {
+    normalize_food_name(alias.replace("_", " ")): key
+    for key, info in FOODS.items()
+    for alias in [key, info["name"], *info["aliases"]]
+}
+
+
+def resolve_commodity(value: str) -> str:
+    explicit_custom = value.casefold().startswith("custom:")
+    name = value[len("custom:"):].strip() if explicit_custom else value.strip()
+    normalized = normalize_food_name(name)
+    if not normalized or any(ord(character) < 32 for character in name):
+        raise ValueError("Please enter a valid food commodity name.")
+    if not explicit_custom and normalized in FOOD_ALIASES:
+        return FOOD_ALIASES[normalized]
+    if normalized not in FOODON_NAMES:
+        raise ValueError("Please enter a valid food commodity name.")
+    # Keep a clear marker for a legitimate FoodOn term outside the prototype's
+    # seven named training profiles. The classifier never receives this name.
+    return f"custom:{name}"
 
 
 class RecommendationRequest(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True, extra="forbid")
 
-    commodity: str = Field(min_length=1, max_length=80)
-    moisture: float = Field(ge=0, le=100)
-    fat: float = Field(ge=0, le=100)
-    ph: float = Field(ge=0, le=14)
-    respiration_rate: float = Field(ge=0, le=500, description="mL CO2 per kg per hour; use a measured rate for respiring produce; zero means not used for this prototype food")
+    commodity: str = Field(min_length=1, max_length=120)
+    moisture: float = Field(ge=0, le=100, allow_inf_nan=False)
+    fat: float = Field(ge=0, le=100, allow_inf_nan=False)
+    ph: float = Field(ge=0, le=14, allow_inf_nan=False)
+    respiration_rate: float = Field(ge=0, le=500, allow_inf_nan=False, description="mL CO2 per kg per hour; use a measured rate for respiring produce; zero means not used for this prototype food")
     shelf_life: int = Field(ge=1, le=730)
-    temperature: float = Field(ge=-40, le=60)
-    humidity: float = Field(ge=0, le=100)
+    temperature: float = Field(ge=-40, le=60, allow_inf_nan=False)
+    humidity: float = Field(ge=0, le=100, allow_inf_nan=False)
     storage_condition: Literal["ambient", "chilled", "frozen"]
     transport_condition: Literal["local", "long", "rough", "cold"]
 
     @field_validator("commodity")
     @classmethod
     def normalize_supported_commodity(cls, value: str) -> str:
-        if value.casefold().startswith("custom:"):
-            name = value[len("custom:"):].strip()
-            if not name:
-                raise ValueError("Enter a food name after the custom: prefix.")
-            if any(ord(character) < 32 for character in name):
-                raise ValueError("Custom food names cannot contain control characters.")
-            return f"custom:{name}"
-        canonical = FOOD_ALIASES.get(value.casefold())
-        if canonical is None:
-            accepted = ", ".join(info["name"] for info in FOODS.values())
-            raise ValueError(f"Unsupported commodity. Use a supported prototype commodity or explicitly prefix a custom food name with 'custom:'. Supported: {accepted}.")
-        return canonical
+        return resolve_commodity(value)
 
     @model_validator(mode="after")
     def validate_composition_and_conditions(self):
@@ -82,6 +117,10 @@ class RecommendationRequest(BaseModel):
             raise ValueError("Frozen vegetables are supported only with frozen storage in this prototype.")
         if self.commodity == "tomatoes" and self.storage_condition == "frozen":
             raise ValueError("Frozen tomatoes are outside the supported tomato profile.")
+        if self.commodity == "bananas" and self.temperature < 13:
+            raise ValueError("Mature-green bananas are chilling-sensitive; the prototype storage/transport profile starts at 13 °C.")
+        if self.commodity == "bananas" and self.storage_condition != "ambient":
+            raise ValueError("The mature-green banana profile uses 13 °C or warmer storage/transport; select ambient storage in this prototype.")
         return self
 
 
@@ -97,7 +136,7 @@ async def lifespan(_app):
     yield
 
 
-app = FastAPI(title="Packwise Recommendation API", version="1.0.0", description="Prototype food packaging classification with research-derived synthetic training data.", lifespan=lifespan)
+app = FastAPI(title="Packwise Recommendation API", version="2.0.0", description="Prototype food packaging classification with research-derived synthetic training data.", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=configured_origins(),
@@ -127,8 +166,12 @@ def load_artifacts(force: bool = False):
             raise FileNotFoundError(f"Packaging database not found at {DATABASE_PATH}")
         if not SOURCES_PATH.is_file():
             raise FileNotFoundError(f"Research source registry not found at {SOURCES_PATH}")
+        if not FOOD_REFERENCE_PATH.is_file():
+            raise FileNotFoundError(f"Food commodity reference not found at {FOOD_REFERENCE_PATH}")
         _pipeline = joblib.load(PIPELINE_PATH)
         _metadata = json.loads(METADATA_PATH.read_text(encoding="utf-8"))
+        if "commodity" in _metadata.get("input_features", []):
+            raise ValueError("The saved model uses commodity names as features; retrain the property-only model before serving.")
         _materials = json.loads(DATABASE_PATH.read_text(encoding="utf-8"))
         _sources = json.loads(SOURCES_PATH.read_text(encoding="utf-8"))
         _load_error = None
@@ -162,6 +205,9 @@ def health():
         "model_version": _metadata.get("model_version"),
         "training_data_type": "synthetic/curated research-derived prototype data",
         "training_rows": _metadata.get("dataset_rows"),
+        "model_features": _metadata.get("input_features", []),
+        "commodity_name_used_by_model": False,
+        "food_reference_terms": FOODON_REFERENCE.get("term_count", len(FOODON_NAMES)),
     }
 
 
@@ -210,7 +256,6 @@ def make_model_row(request: RecommendationRequest):
 def model_feature_explanations(row):
     importance = (_metadata or {}).get("feature_importance", {})
     feature_map = {
-        "commodity": ("Food commodity", FOODS[row["commodity"]]["name"] if row["commodity"] in FOODS else row["commodity"][len("custom:"):]),
         "moisture_content": ("Moisture content", f"{row['moisture_content']:g}%"),
         "fat_oil_content": ("Fat / oil content", f"{row['fat_oil_content']:g}%"),
         "ph": ("pH", f"{row['ph']:g}"),
@@ -230,14 +275,28 @@ def model_feature_explanations(row):
 
 def domain_warnings(row):
     warnings = []
-    if row["commodity"].startswith("custom:"):
-        warnings.append("This custom food was not represented in the training data. One-hot encoding ignores its unseen commodity category; the model output uses other submitted fields and is exploratory only, not a validated packaging recommendation.")
-    ranges = (_metadata or {}).get("input_ranges_by_commodity", {}).get(row["commodity"], {})
+    is_unseen = row["commodity"].startswith("custom:")
+    if is_unseen:
+        warnings.append("This is a valid food commodity name with no named training profile. The commodity name is excluded from the classifier; the prediction uses the submitted measurable and storage features.")
+    if row["commodity"] == "bananas":
+        warnings.append("Banana evidence note: the cited UC Davis fact sheet lists 13–14 °C and 90–95% RH for storage/transport, with chilling-injury risk below 13 °C. This prototype label is a ventilated, PE-lined fiberboard carton candidate; confirm ventilation, cushioning, carton strength and liner construction for your banana maturity and route.")
+        warnings.append("The banana training grid contains only this one curated target class. The model does not compare alternative banana package classes yet, so changing banana conditions may not change the material class.")
+    model_ranges = (_metadata or {}).get("input_ranges_global", {})
+    commodity_ranges = (_metadata or {}).get("input_ranges_by_commodity", {}).get(row["commodity"], {})
     for feature, value in row.items():
-        bounds = ranges.get(feature)
+        bounds = commodity_ranges.get(feature) or model_ranges.get(feature)
         if bounds and (value < bounds[0] or value > bounds[1]):
-            warnings.append(f"{feature}={value} is outside the curated training-grid span {bounds[0]}–{bounds[1]}; the model is extrapolating for this input.")
+            warnings.append(f"{feature}={value} is outside the {('commodity' if feature in commodity_ranges else 'global')} training-data span {bounds[0]}–{bounds[1]}; the model is extrapolating for this input.")
     return warnings
+
+
+def predict_packaging(row: dict):
+    """Run the saved fitted preprocessing-and-classification pipeline."""
+    if _pipeline is None or _metadata is None:
+        raise RuntimeError("The trained property-only model is not loaded.")
+    model_features = _metadata.get("input_features", [])
+    model_input = pd.DataFrame([{feature: row[feature] for feature in model_features}])
+    return str(_pipeline.predict(model_input)[0]), model_input
 
 
 @app.post("/api/recommend")
@@ -249,8 +308,7 @@ def recommend(request: RecommendationRequest):
         raise HTTPException(status_code=503, detail={"error": "database_unavailable"})
     row = make_model_row(request)
     try:
-        model_input = pd.DataFrame([row])
-        prediction = str(_pipeline.predict(model_input)[0])
+        prediction, model_input = predict_packaging(row)
         candidates = []
         is_custom_food = row["commodity"].startswith("custom:")
         if hasattr(_pipeline, "predict_proba"):
@@ -269,18 +327,16 @@ def recommend(request: RecommendationRequest):
         supported_application = not is_custom_food and row["commodity"] in material["typical_applications"]
         suitability = {
             "status": "preliminary_candidate" if supported_application else "review_required",
-            "summary": "The model-selected class appears in this prototype's curated application list. This is a shortlist for expert review, not a validated packaging specification." if supported_application else "This custom food has no training examples or curated application mapping. The returned model class is exploratory only; do not treat it as a recommendation without expert assessment and testing.",
-            "basis": "Rule-based post-prediction suitability check against the packaging database's stated application list; the custom food has no matching curated entry.",
+            "summary": "The model-selected class appears in this prototype's curated application list. This is a shortlist for expert review, not a validated packaging specification." if supported_application else "The food name is valid, but this commodity has no named training profile or curated application mapping. The property-only model generated a preliminary candidate; expert assessment and testing are required.",
+            "basis": "Deterministic post-prediction application check against the packaging database; no commodity-specific application entry exists for this unseen food.",
         }
         important = model_feature_explanations(row)
-        if is_custom_food:
-            important = [item for item in important if item["feature"] != "commodity"]
         lead = ", ".join(f"{item['label']} ({item['global_importance']:.0%} global importance)" for item in important[:3]) or "no exposed feature-importance data"
         if is_custom_food:
             display_name = row["commodity"][len("custom:"):]
             explanation = (
-                f"The trained {(_metadata or {}).get('model_name', 'classifier')} returned {material['name']} for the submitted profile named {display_name!r}, but this food category was not present in training. "
-                "The fitted one-hot encoder ignores the unseen commodity category, so this exploratory output is based on the remaining encoded inputs and must not be interpreted as a food-specific recommendation. "
+                f"The trained {(_metadata or {}).get('model_name', 'classifier')} returned {material['name']} for the valid food name {display_name!r}. "
+                "This name was not one of the named training profiles and was not sent to the property-only classifier; the prediction uses the submitted measurable and storage features. "
                 f"Across supported training profiles, the highest global feature importances were {lead}. These are global associations, not causal evidence or a per-case explanation."
             )
         else:
@@ -290,7 +346,7 @@ def recommend(request: RecommendationRequest):
                 "Those values describe overall model behavior, not causal evidence for this individual package. The class label comes from a research-derived synthetic/curated prototype dataset, not measured package trials."
             )
         warnings = domain_warnings(row)
-        if row["commodity"] in ("tomatoes", "pasteurized_milk", "frozen_vegetables"):
+        if row["commodity"] in ("tomatoes", "pasteurized_milk", "frozen_vegetables", "bananas"):
             warnings.append("Packaging does not establish food safety or a use-by date. Maintain the commodity's validated handling and temperature controls.")
         warnings.append("Thickness, OTR, WVTR, sealability and mechanical-strength values are omitted because this generic material class has no verified complete supplier/test specification in the database.")
         if not candidates:
@@ -310,7 +366,7 @@ def recommend(request: RecommendationRequest):
             "warnings": warnings,
             "input_echo": request.model_dump(),
             "prediction_source": "trained supervised classifier; target labels are synthetic/curated research-derived rules",
-            "prediction_scope": "out_of_training_scope" if is_custom_food else "supported_prototype_commodity",
+            "prediction_scope": "valid_unseen_commodity" if is_custom_food else "supported_prototype_commodity",
             "model": {"name": (_metadata or {}).get("model_name"), "version": (_metadata or {}).get("model_version")},
         }
     except HTTPException:

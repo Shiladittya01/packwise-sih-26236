@@ -1,5 +1,5 @@
 {
-  "checked_date": "2026-09-24",
+  "checked_date": "2026-09-25",
   "sources": [
     {
       "id": "fdc_food_profiles",
@@ -7,13 +7,14 @@
       "source": "USDA Agricultural Research Service",
       "url": "https://fdc.nal.usda.gov/",
       "license": "CC0 1.0 / U.S. public domain",
-      "rows_used": 4,
+      "rows_used": 5,
       "columns_used": ["fdcId", "description", "dataType", "Water (g/100 g)", "Total lipid (fat) (g/100 g)"],
       "records": [
         {"fdcId": 170457, "description": "Tomatoes, red, ripe, raw, year round average", "water": 94.5, "fat": 0.2},
         {"fdcId": 169677, "description": "Snacks, potato chips, plain, salted", "water": 1.86, "fat": 34.0},
         {"fdcId": 746782, "description": "Milk, whole, 3.25% milkfat, with added vitamin D", "water": 88.1, "fat": 3.2},
-        {"fdcId": 172420, "description": "Lentils, raw", "water": 8.26, "fat": 1.06}
+        {"fdcId": 172420, "description": "Lentils, raw", "water": 8.26, "fat": 1.06},
+        {"fdcId": 173944, "description": "Bananas, raw", "water": 74.91, "fat": 0.33}
       ],
       "relevance": "Only illustrative nutrient centers; these data have no packaging recommendation labels and do not validate the generated target.",
       "limitations": "Four specific database records are not population ranges. FDC does not provide pH, respiration, package properties or a food-to-material recommendation target. The biscuit and frozen-vegetable profiles use declared demonstration centers, not values attributed to these four records."
@@ -112,6 +113,38 @@
       "license": "Literature source; cited and paraphrased",
       "relevance": "Supports treating perforation-dependent gas permeance separately from an unperforated base-film OTR.",
       "limitations": "Does not set a universal perforation design for the prototype foods."
+    },
+    {
+      "id": "ucdavis_banana",
+      "name": "Banana (Cavendish) Postharvest Produce Fact Sheet",
+      "source": "UC Davis Postharvest Research and Extension Center",
+      "url": "https://postharvest.ucdavis.edu/produce-facts-sheets/banana",
+      "license": "Educational use restrictions; linked and paraphrased, not redistributed",
+      "fields_used": ["mature-green handling context", "temperature and relative humidity guidance", "respiration-rate bands by temperature", "controlled-atmosphere cautions"],
+      "values_used": [{"temperature_C": 13, "respiration_range_mL_CO2_kg_h": "10–30"}, {"temperature_C": 15, "respiration_range_mL_CO2_kg_h": "12–40"}, {"optimum_storage_transport_C": "13–14"}, {"optimum_relative_humidity_percent": "90–95"}],
+      "relevance": "Supports the illustrative banana profile, two respiration anchors and the banana-specific storage/transport warning.",
+      "limitations": "The fact sheet is about Cavendish bananas and dates to 1996. Respiration varies with maturity and condition. It does not label a preferred carton or validate this model."
+    },
+    {
+      "id": "fao_banana_packaging",
+      "name": "Small-Scale Postharvest Handling Practices, Chapter 7: Packing containers",
+      "source": "Food and Agriculture Organization of the United Nations",
+      "url": "https://www.fao.org/4/ae075e/ae075e08.htm",
+      "license": "FAO publication; cited and paraphrased, not redistributed",
+      "fields_used": ["banana hands packed in cardboard containers lined with polyethylene", "packing arrangement to reduce transport damage", "adequate vents for fiberboard containers"],
+      "relevance": "Directly documents a banana carton/liner format and ventilation guidance used to define the curated target class.",
+      "limitations": "The illustrated guidance does not specify modern carton grade, liner gauge/perforation, dimensions, compression values or applicability to every cultivar and market. It does not establish a comparative optimum."
+    },
+    {
+      "id": "foodon_food_product_vocabulary",
+      "name": "FoodOn food product terminology",
+      "source": "FoodOntology project",
+      "url": "https://github.com/FoodOntology/foodon",
+      "version": "cd73540243a84bcd511a500d9a497d12d7dc02f6",
+      "license": "CC BY 4.0",
+      "terms_used": 12655,
+      "relevance": "Bundled English food-product labels and synonyms are used by the backend to distinguish recognized unseen foods from invalid commodity strings.",
+      "limitations": "Vocabulary only; it supplies no nutritional measurements, packaging labels, compatibility decisions or model training examples."
     }
   ]
 }

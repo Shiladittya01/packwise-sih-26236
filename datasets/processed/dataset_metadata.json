@@ -1,6 +1,6 @@
 {
   "dataset": "datasets/processed/packwise_research_curated_v1.csv",
-  "rows": 295,
+  "rows": 331,
   "features": [
     "commodity",
     "moisture_content",
@@ -14,7 +14,7 @@
     "transport_condition"
   ],
   "target": "recommended_packaging_material",
-  "rule_set_version": "research-curation-1.0",
+  "rule_set_version": "research-curation-1.1",
   "label_counts": {
     "bopp_cpp_pouch": 18,
     "breathable_pe_film": 4,
@@ -23,6 +23,7 @@
     "hdpe_bottle": 36,
     "metallized_laminate": 72,
     "microperforated_polyolefin": 12,
+    "ventilated_banana_carton": 36,
     "woven_pp_pe_liner_sack": 69
   },
   "note": "Deterministic research-derived synthetic/curated data; never experimental ground truth."

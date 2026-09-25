@@ -19,7 +19,7 @@ Deployment is live from the private GitHub repository [`Shiladittya01/packwise-s
 - Health check path: `/api/health`
 - Environment: `PACKWISE_ALLOWED_ORIGINS=https://packwise-sih-26236.vercel.app`
 
-The model, preprocessing pipeline and packaging database are included in the repository. The model API requires no API keys. Render free instances sleep after inactivity and can take about 50 seconds or more to wake.
+The model, preprocessing pipeline, packaging database and FoodOn name-reference snapshot are included in the repository. The model API requires no API keys. Render free instances sleep after inactivity and can take about 50 seconds or more to wake.
 
 ## Vercel website project
 
@@ -33,6 +33,8 @@ The model, preprocessing pipeline and packaging database are included in the rep
 
 Browser → Vercel website → HTTPS Render API → validation and preprocessing → saved supervised model → separate suitability check → packaging database → JSON response → website.
 
-Verified against the live services on 2026-09-24: `/api/health` reported the model loaded with 295 training rows; the website status changed to “ML API connected”; website submissions for tomatoes and potato chips returned distinct Random Forest classes; direct API requests for tomatoes, potato chips and pasteurized milk succeeded; missing fields, unsupported commodities and impossible composition sums returned HTTP 422; and a CORS preflight from the Vercel production origin succeeded. Local API checks also cover missing model artifacts and inference exceptions. No failure was injected into the live model service.
+Live check on 2026-09-25: the website returned HTTP 200 and its deployed JavaScript references the documented Render API URL; the API health endpoint returned HTTP 200 and reported `prototype-1.0` with 295 training rows; the Vercel-origin CORS preflight returned HTTP 200 with the exact allowed origin. The deployed JavaScript does not yet contain the team footer. Direct production requests also confirmed the current defect: `custom:jjjgjghghg` returned HTTP 200 with a material result, and `custom:Dragon Fruit` returned HTTP 200 but was marked `out_of_training_scope`.
+
+The local working tree now contains the property-only `prototype-2.0` model, 331-row dataset, FoodOn name validation and updated website. These changes are not in the deployed services: they remain uncommitted on local `main`. After an approved commit/deployment, the expected health response is 331 rows and `prototype-2.0`; `custom:jjjgjghghg` should return HTTP 422, while `Dragon Fruit` with supported measured properties should return HTTP 200 with `prediction_scope: valid_unseen_commodity`. The local API tests cover these cases; production must be checked again after deployment.
 
 If the Vercel production hostname changes, update `PACKWISE_ALLOWED_ORIGINS` in Render to that exact origin and redeploy/restart the API. If the Render hostname changes, update Vercel's `VITE_API_URL` and redeploy the frontend.

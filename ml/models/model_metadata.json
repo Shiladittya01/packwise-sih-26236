@@ -1,12 +1,11 @@
 {
-  "model_name": "random_forest",
-  "model_type": "RandomForestClassifier",
-  "model_version": "prototype-1.0",
-  "trained_at_utc": "2026-09-24T15:32:16.906974+00:00",
+  "model_name": "gradient_boosting",
+  "model_type": "GradientBoostingClassifier",
+  "model_version": "prototype-2.0",
+  "trained_at_utc": "2026-09-25T01:35:54.888593+00:00",
   "dataset_path": "datasets/processed/packwise_research_curated_v1.csv",
-  "dataset_rows": 295,
+  "dataset_rows": 331,
   "input_features": [
-    "commodity",
     "moisture_content",
     "fat_oil_content",
     "respiration_rate",
@@ -40,6 +39,7 @@
     "hdpe_bottle",
     "metallized_laminate",
     "microperforated_polyolefin",
+    "ventilated_banana_carton",
     "woven_pp_pe_liner_sack"
   ],
   "class_counts": {
@@ -50,9 +50,36 @@
     "hdpe_bottle": 36,
     "metallized_laminate": 72,
     "microperforated_polyolefin": 12,
+    "ventilated_banana_carton": 36,
     "woven_pp_pe_liner_sack": 69
   },
   "input_ranges_by_commodity": {
+    "bananas": {
+      "moisture_content": [
+        74.91,
+        74.91
+      ],
+      "fat_oil_content": [
+        0.33,
+        0.33
+      ],
+      "respiration_rate": [
+        20.0,
+        26.0
+      ],
+      "required_shelf_life": [
+        14.0,
+        28.0
+      ],
+      "storage_temperature": [
+        13.0,
+        15.0
+      ],
+      "storage_humidity": [
+        90.0,
+        95.0
+      ]
+    },
     "biscuits": {
       "moisture_content": [
         4.0,
@@ -210,71 +237,110 @@
       ]
     }
   },
-  "majority_class_baseline": 0.2440677966101695,
+  "input_ranges_global": {
+    "moisture_content": [
+      1.86,
+      94.5
+    ],
+    "fat_oil_content": [
+      0.2,
+      34.0
+    ],
+    "respiration_rate": [
+      0.0,
+      26.0
+    ],
+    "required_shelf_life": [
+      5.0,
+      365.0
+    ],
+    "storage_temperature": [
+      -18.0,
+      30.0
+    ],
+    "storage_humidity": [
+      40.0,
+      95.0
+    ]
+  },
+  "supported_categories": {
+    "storage_condition": [
+      "ambient",
+      "chilled",
+      "frozen"
+    ],
+    "transport_condition": [
+      "cold",
+      "local",
+      "long",
+      "rough"
+    ]
+  },
+  "majority_class_baseline": 0.2175226586102719,
   "cv_folds": 4,
   "cross_validation": {
     "logistic_regression": {
       "accuracy": {
-        "mean": 0.942197334320622,
-        "std": 0.03417404664575915
+        "mean": 0.9363796650014692,
+        "std": 0.04256257109572281
       },
       "precision_macro": {
-        "mean": 0.900920464339582,
-        "std": 0.05774028988916646
+        "mean": 0.8808752204585538,
+        "std": 0.0696156059184307
       },
       "recall_macro": {
-        "mean": 0.9291768790849674,
-        "std": 0.05137879217466054
+        "mean": 0.9046387073347857,
+        "std": 0.07013082449412403
       },
       "f1_macro": {
-        "mean": 0.8941801217441634,
-        "std": 0.07033962586043546
+        "mean": 0.8756554402387736,
+        "std": 0.078306659142167
       }
     },
     "random_forest": {
       "accuracy": {
-        "mean": 0.9931506849315068,
-        "std": 0.01186336169567724
+        "mean": 0.9939024390243902,
+        "std": 0.010561285412005359
       },
       "precision_macro": {
-        "mean": 0.9905427631578947,
-        "std": 0.016380414709738545
+        "mean": 0.9846491228070176,
+        "std": 0.02658849923899591
       },
       "recall_macro": {
-        "mean": 0.9903492647058824,
-        "std": 0.016715563859809927
+        "mean": 0.9837962962962963,
+        "std": 0.028065638085606838
       },
       "f1_macro": {
-        "mean": 0.9903959357084358,
-        "std": 0.016634727312147355
+        "mean": 0.9804661804661805,
+        "std": 0.03383356789845686
       }
     },
     "gradient_boosting": {
       "accuracy": {
-        "mean": 0.9931506849315068,
-        "std": 0.01186336169567724
+        "mean": 0.9908903908316191,
+        "std": 0.010100780042490293
       },
       "precision_macro": {
-        "mean": 0.9791666666666666,
-        "std": 0.03608439182435163
+        "mean": 0.9957602339181286,
+        "std": 0.004630142579565219
       },
       "recall_macro": {
-        "mean": 0.9791666666666666,
-        "std": 0.03608439182435163
+        "mean": 0.9805555555555556,
+        "std": 0.022737091032979034
       },
       "f1_macro": {
-        "mean": 0.96875,
-        "std": 0.05412658773652741
+        "mean": 0.9854415819328101,
+        "std": 0.017513668106418585
       }
     }
   },
   "holdout": {
-    "accuracy": 0.9846153846153847,
-    "precision_macro": 0.9375,
-    "recall_macro": 0.9583333333333333,
-    "f1_macro": 0.9333333333333333,
-    "test_rows": 65,
-    "train_rows": 230,
+    "accuracy": 1.0,
+    "precision_macro": 1.0,
+    "recall_macro": 1.0,
+    "f1_macro": 1.0,
+    "test_rows": 73,
+    "train_rows": 258,
     "split_seed": 42,
     "confusion_matrix_labels": [
       "bopp_cpp_pouch",
@@ -284,6 +350,7 @@
       "hdpe_bottle",
       "metallized_laminate",
       "microperforated_polyolefin",
+      "ventilated_banana_carton",
       "woven_pp_pe_liner_sack"
     ],
     "confusion_matrix": [
@@ -295,11 +362,13 @@
         0,
         0,
         0,
+        0,
         0
       ],
       [
         0,
         1,
+        0,
         0,
         0,
         0,
@@ -315,6 +384,7 @@
         0,
         0,
         0,
+        0,
         0
       ],
       [
@@ -325,6 +395,7 @@
         0,
         0,
         0,
+        0,
         0
       ],
       [
@@ -333,6 +404,7 @@
         0,
         0,
         8,
+        0,
         0,
         0,
         0
@@ -345,19 +417,33 @@
         0,
         16,
         0,
+        0,
         0
       ],
       [
         0,
-        1,
         0,
         0,
         0,
         0,
-        2,
+        0,
+        3,
+        0,
         0
       ],
       [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8,
+        0
+      ],
+      [
+        0,
         0,
         0,
         0,
@@ -371,21 +457,21 @@
   },
   "feature_importance_method": "tree impurity importance aggregated by source feature",
   "feature_importance": {
-    "commodity": 0.21557964708954758,
-    "moisture_content": 0.09379774077622692,
-    "fat_oil_content": 0.10427818390740214,
-    "respiration_rate": 0.05891612101715028,
-    "required_shelf_life": 0.1971338875573511,
-    "storage_temperature": 0.09458010862496283,
-    "storage_humidity": 0.04214933836391434,
-    "storage_condition": 0.1132358075594587,
-    "transport_condition": 0.080329165103986
+    "moisture_content": 0.23079042233966066,
+    "fat_oil_content": 0.20924715685788156,
+    "respiration_rate": 0.13878745036308696,
+    "required_shelf_life": 0.08171450057705912,
+    "storage_temperature": 0.07477483422575396,
+    "storage_humidity": 0.004422382041134652,
+    "storage_condition": 0.22633819561380641,
+    "transport_condition": 0.03392505798161666
   },
   "scikit_learn_version": "1.9.1",
   "limitations": [
     "All target labels are deterministic research-derived curation rules, not experimentally observed packaging decisions.",
     "Metrics quantify how well candidate estimators reproduce this synthetic rule grid; they are not real-food accuracy or scientific validation.",
     "The structured grid contains one demonstration nutrient/pH center for several commodities; changed real measurements may be outside the training distribution.",
+    "Mature-green bananas have one curated target class in the current grid, so the model does not compare competing banana package classes or learn banana-specific material tradeoffs.",
     "No confidence percentage is displayed because class probabilities are not calibrated against experimental outcomes."
   ]
 }

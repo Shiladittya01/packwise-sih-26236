@@ -26,7 +26,7 @@ DATA_PATH = ROOT / "datasets" / "processed" / "packwise_research_curated_v1.csv"
 MODEL_DIR = ROOT / "ml" / "models"
 TARGET = "recommended_packaging_material"
 FEATURES = [
-    "commodity", "moisture_content", "fat_oil_content", "respiration_rate",
+    "moisture_content", "fat_oil_content", "respiration_rate",
     "required_shelf_life", "storage_temperature", "storage_humidity",
     "storage_condition", "transport_condition",
 ]
@@ -39,7 +39,7 @@ NUMERIC = [
     "moisture_content", "fat_oil_content", "respiration_rate",
     "required_shelf_life", "storage_temperature", "storage_humidity",
 ]
-CATEGORICAL = ["commodity", "storage_condition", "transport_condition"]
+CATEGORICAL = ["storage_condition", "transport_condition"]
 API_TO_DATASET = {
     "commodity": "commodity", "moisture": "moisture_content", "fat": "fat_oil_content",
     "ph": "ph", "respiration_rate": "respiration_rate", "shelf_life": "required_shelf_life",
@@ -103,8 +103,8 @@ def aggregate_importances(pipeline):
     grouped = {name: 0.0 for name in FEATURES}
     for transformed_name, value in zip(names, raw):
         clean = transformed_name.split("__", 1)[-1]
-        # One-hot columns are named such as commodity_tomatoes. Match the
-        # longest original feature first to keep names containing underscores.
+        # Match the longest source feature first to keep names containing
+        # underscores intact.
         source = next((f for f in sorted(FEATURES, key=len, reverse=True) if clean == f or clean.startswith(f + "_")), None)
         if source:
             grouped[source] += float(value)
@@ -194,7 +194,10 @@ def main():
     feature_config = {
         "features": FEATURES,
         "accepted_request_fields": DATASET_INPUTS,
-        "validated_but_not_used_by_model": {"ph": "No defensible pH-to-material-class label rule was found for these curated classes; pH is validated, stored in the dataset and echoed by the API but excluded from the classifier to prevent commodity-profile proxy leakage."},
+        "validated_but_not_used_by_model": {
+            "commodity": "Used only for dataset provenance and application validation; the classifier cannot use food names, so an unseen validated food follows the same measured-feature pipeline.",
+            "ph": "No defensible pH-to-material-class label rule was found for these curated classes; pH is validated, stored in the dataset and echoed by the API but excluded from the classifier.",
+        },
         "numeric_features": NUMERIC,
         "categorical_features": CATEGORICAL,
         "target": TARGET,
@@ -208,7 +211,7 @@ def main():
     metadata = {
         "model_name": selected_name,
         "model_type": type(final_pipeline.named_steps["classifier"]).__name__,
-        "model_version": "prototype-1.0",
+        "model_version": "prototype-2.0",
         "trained_at_utc": datetime.now(timezone.utc).isoformat(),
         "dataset_path": DATA_PATH.relative_to(ROOT).as_posix(),
         "dataset_rows": int(len(frame)),
@@ -225,6 +228,14 @@ def main():
             }
             for food in sorted(frame.commodity.unique())
         },
+        "input_ranges_global": {
+            column: [float(frame[column].min()), float(frame[column].max())]
+            for column in NUMERIC
+        },
+        "supported_categories": {
+            column: sorted(frame[column].astype(str).unique().tolist())
+            for column in CATEGORICAL
+        },
         "majority_class_baseline": float(class_counts.max() / len(frame)),
         "cv_folds": n_splits,
         "cross_validation": cv_results,
@@ -236,6 +247,7 @@ def main():
             "All target labels are deterministic research-derived curation rules, not experimentally observed packaging decisions.",
             "Metrics quantify how well candidate estimators reproduce this synthetic rule grid; they are not real-food accuracy or scientific validation.",
             "The structured grid contains one demonstration nutrient/pH center for several commodities; changed real measurements may be outside the training distribution.",
+            "Mature-green bananas have one curated target class in the current grid, so the model does not compare competing banana package classes or learn banana-specific material tradeoffs.",
             "No confidence percentage is displayed because class probabilities are not calibrated against experimental outcomes.",
         ],
     }
@@ -269,7 +281,7 @@ Generated: {meta['trained_at_utc']}
 
 ## Preprocessing and leakage checks
 
-Categorical inputs use most-frequent imputation and one-hot encoding. Numeric inputs use median imputation and standard scaling. Both are inside a scikit-learn `Pipeline`, so each cross-validation fold fits preprocessing only on its training partition. The dataset contains pH and the API validates and echoes it, but pH is excluded from the classifier: the label rules have no defensible pH-to-material threshold, and fixed pH centers could leak commodity identity. Generated data was checked for missing values, exact duplicate request/target records, impossible composition sums, pH/RH bounds, and train/test index overlap. The split/helper column is not a model input.
+The classifier uses six measured numeric inputs plus storage and transport conditions. It does not receive the commodity name or pH. Numeric inputs use median imputation and standard scaling; categorical conditions use most-frequent imputation and one-hot encoding. These are inside a scikit-learn `Pipeline`, so each cross-validation fold fits preprocessing only on its training partition. The dataset retains the commodity and pH for provenance and API validation, but neither reaches the classifier. Generated data was checked for missing values, exact duplicate request/target records, impossible composition sums, pH/RH bounds, and train/test index overlap. The split/helper column is not a model input.
 
 The rows are a structured scenario grid derived from a fixed label policy. The evaluation therefore measures rule-grid reproduction, not generalization to independent experiments. Neighboring grid points can be correlated; high scores must not be presented as real-world packaging accuracy.
 
@@ -298,6 +310,10 @@ Confusion matrix uses this class order: {', '.join(f'`{name}`' for name in meta[
 ```
 
 These figures are **not estimates of real-world predictive performance**. They quantify how well a conventional model recovers curated labels from their own generated design grid.
+
+## Unseen commodity and support handling
+
+The commodity name is not a model feature. The API validates it against the bundled FoodOn vocabulary, then sends the same eight measured/storage features to the fitted pipeline for a known or valid unseen name. Invalid names are rejected before inference. This demonstrates inference for an unseen name in the model's feature space; it does not establish real-world food or packaging generalization because the labels are synthetic/curated and there is no independent commodity trial set. The API warns when a numeric model input falls outside its global training-data min/max range. That simple per-feature check does not detect every unsupported combination within those bounds.
 
 ## Explainability and confidence
 

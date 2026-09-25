@@ -153,6 +153,25 @@
       "wvtr": null,
       "limitations": ["The class is a prototype bulk-format option; pack size and liner material are not defined.", "Do not infer hermetic storage performance from a woven outer sack."],
       "source_ids": ["food_packaging_permeability_dataset"]
+    },
+    {
+      "id": "ventilated_banana_carton",
+      "name": "Ventilated fiberboard banana carton with PE liner",
+      "family": "Fiberboard produce carton",
+      "abbreviation": "FB/PE",
+      "structure": "Corrugated fiberboard banana carton with adequate ventilation and a polyethylene liner; cushioning, dividers, carton grade, vents and liner construction must be specified for the actual pack.",
+      "typical_applications": ["bananas"],
+      "oxygen_barrier": "Not an oxygen-barrier package class. Vent openings and any liner affect air and gas exchange; no gas composition is implied.",
+      "moisture_barrier": "The PE liner may reduce water loss, but liner permeability and carton moisture resistance are unspecified and must be checked for the intended route.",
+      "gas_permeability": "Carton ventilation and liner design are construction-specific; do not treat a folded PE liner as a validated MAP system.",
+      "sealability": "Closure method is unspecified. Confirm closure integrity, vent alignment and pack-house compatibility.",
+      "mechanical_strength": "No sourced numeric strength is available for this generic class. Check box compression, stacking, drop and vibration performance with the filled pack, especially under humid conditions.",
+      "map_suitability": "No MAP claim. If a controlled atmosphere is intended, design and validate the complete liner, perforation, load and gas-exchange system separately.",
+      "thickness_range_um": null,
+      "otr": null,
+      "wvtr": null,
+      "limitations": ["A general prototype format drawn from FAO banana-packing guidance, not a specified commercial banana carton.", "Vent size, cushioning, liner perforation, fruit maturity, load size, board grade and compression limits are not provided.", "The class does not control ripening, certify food contact or establish shelf life."],
+      "source_ids": ["fao_banana_packaging", "ucdavis_banana"]
     }
   ]
 }

@@ -6,11 +6,17 @@ The supervised model lives in `ml/models/packwise_pipeline.joblib`. `backend/pac
 
 ## Where did the data come from? How many samples?
 
-The reviewed public sources did not provide the complete experimental food/condition → recommended-material label table needed for this classifier. Packwise uses 295 deterministically generated, research-derived synthetic/curated scenario rows. This is a prototype dataset, not experimentally collected data or 295 independent tests. Its ingredient composition anchors and tomato respiration anchors are sourced and documented; label assignment is by versioned documented curation rules.
+The reviewed public sources did not provide the complete experimental food/condition → recommended-material label table needed for this classifier. Packwise uses 331 deterministically generated, research-derived synthetic/curated scenario rows across seven commodity profiles. This is a prototype dataset, not experimentally collected data or 331 independent tests. Banana composition and respiration anchors and its carton/liner design context are sourced and documented; label assignment is by versioned documented curation rules. The banana grid has only one curated package class, so it does not compare banana packaging alternatives.
+
+Food names are checked separately against a pinned FoodOn product-term snapshot bundled for offline use. The current snapshot has 12,655 terms. It rejects unmatched strings such as `jjjgjghghg`; it does not provide measured properties or packaging labels.
+
+## What happens for a banana?
+
+Select **Mature-green bananas**. For the prototype profile, the model returns a ventilated fiberboard carton with a polyethylene liner, based on FAO banana-packing guidance. UC Davis postharvest guidance supplies the respiration and handling context: 13–14 °C and 90–95% RH for storage/transport, with chilling-injury risk below 13 °C. The UI defaults are illustrative and should be replaced with measured product/route data. This is a research-curated prototype candidate, not experimental proof of the best banana pack. The current banana training grid contains one target class, so the model does not choose among competing banana package designs.
 
 ## Why this model, and what are the metrics?
 
-The trainer compared Logistic Regression, Random Forest and Gradient Boosting. The Random Forest won on four-fold stratified cross-validation macro-F1. The generated model report gives accuracy, macro precision, macro recall, macro-F1, fold standard deviations and confusion matrix. Those values measure how well the model reconstructs the curated grid labels, not real-world package-selection accuracy.
+The trainer compared Logistic Regression, Random Forest and Gradient Boosting. Gradient Boosting won on four-fold stratified cross-validation macro-F1 for the current artifact. The generated model report gives accuracy, macro precision, macro recall, macro-F1, fold standard deviations and confusion matrix. Those values measure how well the model reconstructs the curated grid labels, not real-world package-selection accuracy.
 
 ## How do you prevent overfitting?
 
@@ -18,7 +24,7 @@ Preprocessing stays inside the cross-validation pipeline, exact duplicate input 
 
 ## How does the result respond to inputs? Is this only rules?
 
-The frontend submits the current form values to `/api/recommend`. The API runs the fitted classifier; it does not run the dataset's label-generation rules to make each prediction. Several inputs (such as shelf target, respiration and route) can move a row across learned class boundaries. Since the training labels were curated rules, the model is a genuine supervised ML implementation but not evidence that it outperforms a transparent rule system. This distinction should be stated plainly.
+The frontend submits the current form values to `/api/recommend`. The classifier receives eight measured/storage fields; it never receives commodity name or pH. A valid unseen food such as Dragon Fruit runs through the same saved preprocessing and model pipeline as a training profile. The API marks the name as unseen and checks numeric inputs against training ranges. It does not run the dataset's label-generation rules during inference. Since the training labels were curated rules, this is a supervised ML prototype and not evidence that it outperforms a transparent rule system or generalizes to experimentally verified packaging choices.
 
 ## Can it be used to choose a production pack?
 
