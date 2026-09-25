@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img">
+  <defs>
+    <linearGradient id="foil" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff"/><stop offset=".25" stop-color="#aebbb5"/><stop offset=".48" stop-color="#f7faf7"/><stop offset=".73" stop-color="#9eaaa4"/><stop offset="1" stop-color="#e5eae6"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.8"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#293c32" flood-opacity=".14"/></filter>
+  </defs>
+  <rect width="320" height="220" rx="18" fill="#f0f4ec"/>
+  <ellipse cx="162" cy="183" rx="105" ry="11" fill="#557462" opacity=".12"/>
+  <g filter="url(#shadow)">
+    <path d="m73 83 154-20 21 72-157 24z" fill="url(#foil)" stroke="#899891"/>
+    <path d="m83 91 143-19m-137 31 144-18m-138 30 144-18" stroke="#fff" stroke-width="3" opacity=".74"/>
+    <path d="m109 159 118-15 9 13-117 17z" fill="#c5cec9" stroke="#87948e"/>
+    <path d="m124 164 116-16 5 7-116 17z" fill="#d6d9d5" stroke="#a2aaa5"/>
+    <path d="m139 169 109-15 4 7-108 15z" fill="#77968a" stroke="#55796c"/>
+  </g>
+  <g font-family="Arial,sans-serif" font-size="8" fill="#50695c">
+    <text x="79" y="190">POLYMER</text><text x="141" y="190">ALUMINIUM FOIL</text><text x="236" y="190">SEAL LAYER</text>
+  </g>
+  <path d="M116 179v6m65-6v6m60-6v6" stroke="#718c7c"/>
+</svg>

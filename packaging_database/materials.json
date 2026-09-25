@@ -1,12 +1,13 @@
 {
-  "schema_version": "1.0.0",
-  "evidence_policy": "Only sourced qualitative claims are included. Numeric thickness, OTR, WVTR, seal strength and service ranges remain null until a source specifies the complete test conditions and package structure.",
+  "schema_version": "1.1.0",
+  "evidence_policy": "Only sourced qualitative claims are included. Numeric thickness, OTR, WVTR, seal strength and service ranges remain null until a source specifies the complete test conditions and package structure. Suitability-engine compatibility profiles use ordinal design bands from the qualitative descriptions; they are disclosed estimates, not material test values.",
   "materials": [
     {
       "id": "microperforated_polyolefin",
       "name": "Micro-perforated polyolefin film",
       "family": "Perforated polyolefin",
       "abbreviation": "µP",
+      "image_asset": "/materials/microperforated-film.svg",
       "structure": "Food-contact polyolefin film with engineered micro-perforations; polymer, gauge, hole geometry and seal layer are supplier-specific.",
       "typical_applications": ["tomatoes"],
       "oxygen_barrier": "Perforations provide gas exchange; package O₂/CO₂ balance depends on produce respiration, film area, fill mass, hole geometry and temperature.",
@@ -19,13 +20,44 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["Perforation size/count and the produce load are not specified by the class name.", "Temperature excursions can change respiration and in-pack gas composition.", "A model recommendation does not establish a safe or attainable shelf life."],
-      "source_ids": ["ucdavis_tomato", "map_review_2016", "perforated_film_meta_review"]
+      "source_ids": ["ucdavis_tomato", "map_review_2016", "perforated_film_meta_review"],
+      "compatibility_profile": {
+        "food_groups": ["fresh_produce"],
+        "ratings": {
+          "oxygen_barrier": "low",
+          "water_vapor_barrier": "moderate",
+          "gas_exchange": "high",
+          "sealability": "moderate",
+          "fat_resistance": "unknown",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "moderate",
+          "light_barrier": "low",
+          "shelf_life_barrier": "low"
+        },
+        "component_groups": ["polyolefin"],
+        "additional_components_unspecified": true,
+        "recycling_status": "unknown",
+        "storage_support": {},
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     },
     {
       "id": "breathable_pe_film",
       "name": "High-permeability PE produce film",
       "family": "Polyethylene produce film",
       "abbreviation": "PE",
+      "image_asset": "/materials/produce-film.svg",
       "structure": "Food-contact polyethylene produce film; resin blend, gauge, perforation and additives are unspecified.",
       "typical_applications": ["tomatoes"],
       "oxygen_barrier": "A produce film must be selected against the commodity respiration and package geometry; no oxygen-barrier grade is assigned here.",
@@ -38,13 +70,45 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["The broad PE family does not specify resin grade, gauge or gas transmission.", "No material class alone predicts shelf life or microbial safety."],
-      "source_ids": ["map_review_2016", "map_review_2020"]
+      "source_ids": ["map_review_2016", "map_review_2020"],
+      "compatibility_profile": {
+        "food_groups": ["fresh_produce"],
+        "ratings": {
+          "oxygen_barrier": "low",
+          "water_vapor_barrier": "moderate",
+          "gas_exchange": "high",
+          "sealability": "moderate",
+          "fat_resistance": "moderate",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "moderate",
+          "light_barrier": "low",
+          "shelf_life_barrier": "low"
+        },
+        "component_groups": ["polyolefin"],
+        "additional_components_unspecified": true,
+        "recycling_status": "unknown",
+        "storage_support": {},
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "fat_resistance": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     },
     {
       "id": "metallized_laminate",
       "name": "Metallized flexible laminate",
       "family": "Multilayer flexible laminate",
       "abbreviation": "MET",
+      "image_asset": "/materials/metallized-laminate.svg",
       "structure": "Metallized polymer laminate with a compatible food-contact seal layer; layer order, metallization and gauge are not specified.",
       "typical_applications": ["potato_chips", "biscuits"],
       "oxygen_barrier": "A barrier laminate is a candidate when oxygen-sensitive quality is important; actual performance depends on the complete structure and flex damage.",
@@ -57,13 +121,46 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["A generic material label does not specify barrier performance.", "Multilayer construction and metallization can limit sorting and recycling options.", "Nitrogen supply gas does not establish zero residual oxygen."],
-      "source_ids": ["cereal_packaging_review_2022"]
+      "source_ids": ["cereal_packaging_review_2022"],
+      "compatibility_profile": {
+        "food_groups": ["dry_snack", "dry_food"],
+        "ratings": {
+          "oxygen_barrier": "high",
+          "water_vapor_barrier": "high",
+          "gas_exchange": "low",
+          "sealability": "moderate",
+          "fat_resistance": "moderate",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "moderate",
+          "light_barrier": "high",
+          "shelf_life_barrier": "high"
+        },
+        "component_groups": ["polymer", "metal"],
+        "additional_components_unspecified": true,
+        "recycling_status": "constrained",
+        "recycling_basis": "Catalog limitation: multilayer construction and metallization can limit sorting and recycling options.",
+        "storage_support": {},
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "fat_resistance": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     },
     {
       "id": "foil_laminate",
       "name": "Aluminium-foil flexible laminate",
       "family": "Multilayer flexible laminate",
       "abbreviation": "AL",
+      "image_asset": "/materials/foil-laminate.svg",
       "structure": "Flexible laminate containing aluminium foil and polymer layers; foil gauge, layer order, adhesive and sealant are unspecified.",
       "typical_applications": ["potato_chips"],
       "oxygen_barrier": "Used as a high-barrier structure in food packaging; no numeric OTR is transferred to this unspecified construction.",
@@ -76,13 +173,45 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["Structure and foil thickness are unspecified, so barrier values cannot be inferred.", "Mixed-material construction is difficult to recycle in many existing collection streams."],
-      "source_ids": ["food_packaging_permeability_dataset", "cereal_packaging_review_2022"]
+      "source_ids": ["food_packaging_permeability_dataset", "cereal_packaging_review_2022"],
+      "compatibility_profile": {
+        "food_groups": ["dry_snack", "dry_food"],
+        "ratings": {
+          "oxygen_barrier": "high",
+          "water_vapor_barrier": "high",
+          "gas_exchange": "low",
+          "sealability": "moderate",
+          "fat_resistance": "unknown",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "moderate",
+          "light_barrier": "high",
+          "shelf_life_barrier": "high"
+        },
+        "component_groups": ["aluminium", "polymer"],
+        "additional_components_unspecified": true,
+        "recycling_status": "constrained",
+        "recycling_basis": "Catalog limitation: mixed-material construction is difficult to recycle in many existing collection streams.",
+        "storage_support": {},
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     },
     {
       "id": "bopp_cpp_pouch",
       "name": "BOPP/CPP flexible pouch",
       "family": "Polypropylene flexible packaging",
       "abbreviation": "PP",
+      "image_asset": "/materials/bopp-cpp-pouch.svg",
       "structure": "Biaxially oriented polypropylene / cast polypropylene pouch; gauge, coatings, seal geometry and any additional layers are unspecified.",
       "typical_applications": ["biscuits", "lentils"],
       "oxygen_barrier": "No numeric oxygen barrier is assigned; choose a measured construction against the product's oxygen sensitivity.",
@@ -95,13 +224,45 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["No gauge or barrier measurement is available for this class entry.", "The suitability of a pouch depends on product moisture, oil, package size and seal quality."],
-      "source_ids": ["cereal_packaging_review_2022"]
+      "source_ids": ["cereal_packaging_review_2022"],
+      "compatibility_profile": {
+        "food_groups": ["dry_snack", "dry_food", "dry_commodity"],
+        "ratings": {
+          "oxygen_barrier": "moderate",
+          "water_vapor_barrier": "moderate",
+          "gas_exchange": "moderate",
+          "sealability": "moderate",
+          "fat_resistance": "moderate",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "moderate",
+          "light_barrier": "low",
+          "shelf_life_barrier": "moderate"
+        },
+        "component_groups": ["polypropylene"],
+        "additional_components_unspecified": true,
+        "recycling_status": "unknown",
+        "storage_support": {},
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "fat_resistance": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     },
     {
       "id": "hdpe_bottle",
       "name": "HDPE bottle",
       "family": "Rigid polyethylene container",
       "abbreviation": "HDPE",
+      "image_asset": "/materials/hdpe-bottle.svg",
       "structure": "Food-contact HDPE bottle and compatible closure; resin grade, wall thickness, pigment, geometry and closure are unspecified.",
       "typical_applications": ["pasteurized_milk"],
       "oxygen_barrier": "No numeric barrier claim recorded for an unspecified bottle and closure.",
@@ -114,13 +275,47 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["This entry does not validate food-contact compliance or migration.", "A package cannot compensate for inadequate pasteurization or temperature control."],
-      "source_ids": ["map_review_2020"]
+      "source_ids": ["map_review_2020"],
+      "compatibility_profile": {
+        "food_groups": ["chilled_liquid", "liquid_food"],
+        "ratings": {
+          "oxygen_barrier": "low",
+          "water_vapor_barrier": "moderate",
+          "gas_exchange": "low",
+          "sealability": "moderate",
+          "fat_resistance": "moderate",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "moderate",
+          "light_barrier": "low",
+          "shelf_life_barrier": "moderate"
+        },
+        "component_groups": ["polyethylene"],
+        "additional_components_unspecified": true,
+        "recycling_status": "unknown",
+        "storage_support": {
+          "chilled": "high"
+        },
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "fat_resistance": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     },
     {
       "id": "freezer_pe_bag",
       "name": "Freezer-grade polyethylene bag",
       "family": "Polyethylene flexible packaging",
       "abbreviation": "PE",
+      "image_asset": "/materials/freezer-bag.svg",
       "structure": "Flexible polyethylene bag intended for frozen-food use; grade, gauge and seal construction are supplier-specific.",
       "typical_applications": ["frozen_vegetables"],
       "oxygen_barrier": "No numeric oxygen-barrier value recorded for this unspecified bag.",
@@ -133,13 +328,47 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["No freezer-temperature service limit is asserted without a supplier specification.", "The cold chain and process remain outside the ML model."],
-      "source_ids": ["food_packaging_permeability_dataset"]
+      "source_ids": ["food_packaging_permeability_dataset"],
+      "compatibility_profile": {
+        "food_groups": ["frozen_food"],
+        "ratings": {
+          "oxygen_barrier": "low",
+          "water_vapor_barrier": "moderate",
+          "gas_exchange": "low",
+          "sealability": "moderate",
+          "fat_resistance": "moderate",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "high",
+          "light_barrier": "low",
+          "shelf_life_barrier": "moderate"
+        },
+        "component_groups": ["polyethylene"],
+        "additional_components_unspecified": true,
+        "recycling_status": "unknown",
+        "storage_support": {
+          "frozen": "high"
+        },
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "fat_resistance": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     },
     {
       "id": "woven_pp_pe_liner_sack",
       "name": "Woven PP sack with sealed PE liner",
       "family": "Bulk flexible package",
       "abbreviation": "PP/PE",
+      "image_asset": "/materials/woven-liner-sack.svg",
       "structure": "Woven polypropylene outer sack with an independent food-contact polyethylene liner; liner seal and dimensions are unspecified.",
       "typical_applications": ["lentils"],
       "oxygen_barrier": "The woven outer layer is not treated as a gas barrier; the liner construction requires supplier data.",
@@ -152,13 +381,44 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["The class is a prototype bulk-format option; pack size and liner material are not defined.", "Do not infer hermetic storage performance from a woven outer sack."],
-      "source_ids": ["food_packaging_permeability_dataset"]
+      "source_ids": ["food_packaging_permeability_dataset"],
+      "compatibility_profile": {
+        "food_groups": ["dry_commodity", "dry_food"],
+        "ratings": {
+          "oxygen_barrier": "low",
+          "water_vapor_barrier": "moderate",
+          "gas_exchange": "high",
+          "sealability": "moderate",
+          "fat_resistance": "unknown",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "moderate",
+          "light_barrier": "low",
+          "shelf_life_barrier": "moderate"
+        },
+        "component_groups": ["polypropylene", "polyethylene"],
+        "additional_components_unspecified": true,
+        "recycling_status": "unknown",
+        "storage_support": {},
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     },
     {
       "id": "ventilated_banana_carton",
       "name": "Ventilated fiberboard banana carton with PE liner",
       "family": "Fiberboard produce carton",
       "abbreviation": "FB/PE",
+      "image_asset": "/materials/ventilated-carton.svg",
       "structure": "Corrugated fiberboard banana carton with adequate ventilation and a polyethylene liner; cushioning, dividers, carton grade, vents and liner construction must be specified for the actual pack.",
       "typical_applications": ["bananas"],
       "oxygen_barrier": "Not an oxygen-barrier package class. Vent openings and any liner affect air and gas exchange; no gas composition is implied.",
@@ -171,7 +431,37 @@
       "otr": null,
       "wvtr": null,
       "limitations": ["A general prototype format drawn from FAO banana-packing guidance, not a specified commercial banana carton.", "Vent size, cushioning, liner perforation, fruit maturity, load size, board grade and compression limits are not provided.", "The class does not control ripening, certify food contact or establish shelf life."],
-      "source_ids": ["fao_banana_packaging", "ucdavis_banana"]
+      "source_ids": ["fao_banana_packaging", "ucdavis_banana"],
+      "compatibility_profile": {
+        "food_groups": ["fresh_produce"],
+        "ratings": {
+          "oxygen_barrier": "low",
+          "water_vapor_barrier": "moderate",
+          "gas_exchange": "high",
+          "sealability": "low",
+          "fat_resistance": "unknown",
+          "mechanical_protection": "moderate",
+          "temperature_tolerance": "moderate",
+          "light_barrier": "low",
+          "shelf_life_barrier": "low"
+        },
+        "component_groups": ["fiberboard", "polyethylene"],
+        "additional_components_unspecified": true,
+        "recycling_status": "unknown",
+        "storage_support": {},
+        "profile_kind": "qualitative_design_bands",
+        "profile_note": "Ordinal compatibility inputs derived from the catalog description and cited use context. Not measured OTR, WVTR, seal strength, temperature rating, recyclability certification or supplier data.",
+        "rating_basis": {
+          "oxygen_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "water_vapor_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "gas_exchange": "qualitative catalog capability band; complete-package testing remains required",
+          "sealability": "qualitative catalog capability band; complete-package testing remains required",
+          "mechanical_protection": "qualitative catalog capability band; complete-package testing remains required",
+          "temperature_tolerance": "qualitative catalog capability band; complete-package testing remains required",
+          "light_barrier": "qualitative catalog capability band; complete-package testing remains required",
+          "shelf_life_barrier": "qualitative catalog capability band; complete-package testing remains required"
+        }
+      }
     }
   ]
 }

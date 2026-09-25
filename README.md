@@ -2,7 +2,7 @@
 
 PACKWISE is a browser-based decision-support prototype for SIH 2026 Problem Statement 26236: **AI-Based Intelligent Food Packaging Material Recommendation System for Food Commodities**.
 
-It preserves the existing Packwise visual design and replaces its browser-only weighted rules engine with a real frontend → API → preprocessing pipeline → trained scikit-learn classifier → separate suitability check → source-linked packaging database flow. The classifier returns a packaging-material class. It does not predict food safety or shelf life.
+It preserves the existing Packwise visual design and connects the website to a frontend → API → preprocessing pipeline → trained classifier plus property-based material compatibility engine. The classifier returns a packaging-material class. It does not predict food safety or shelf life.
 
 ## Evidence status
 
@@ -21,13 +21,14 @@ flowchart LR
   A --> V[Validation]
   V --> P[Saved preprocessing pipeline<br/>imputation, scaling, encoding]
   P --> M[Trained Gradient Boosting classifier]
-  M --> S[Separate suitability check]
-  S --> D[Research-linked packaging database]
-  D --> R[JSON response: prediction, explanation,<br/>properties, alternatives, warnings]
+  V --> C[Food requirement profile + compatibility engine]
+  M -. optional class probability .-> C
+  C --> D[Research-linked packaging database]
+  D --> R[JSON response: estimate, coverage,<br/>ranked materials, sustainability, warnings]
   R --> F
 ```
 
-The runtime recommendation is a model prediction; the dataset’s curation rules are only used to generate training labels. Post-prediction suitability is a separate check against the database application list. The API returns `confidence: null`; no percentage is shown because there is no experimental calibration set. Material properties such as thickness, OTR, WVTR, sealability and mechanical strength stay qualitative or blank unless an exact structure and test conditions are sourced.
+The trained classifier returns a material class and, when available, its raw probability as `confidence`. Separately, the compatibility engine builds food requirements from submitted properties, scores each material from its qualitative capability bands, and ranks the catalog. Missing factors are excluded from the suitability average and lower its separate data-coverage value. Valid custom foods follow the same ranking path. The material bands are estimates, not measured OTR, WVTR, sealability, strength or shelf-life results.
 
 ## Repository structure
 
@@ -114,7 +115,7 @@ Open `http://127.0.0.1:5173`. The frontend defaults to `http://127.0.0.1:8000`. 
 
 The seven named training profiles are `tomatoes`, `potato_chips`, `biscuits`, `pasteurized_milk`, `frozen_vegetables`, `lentils`, and `bananas` (display-name aliases such as “banana” are accepted). The API also checks unseen names against the bundled FoodOn food-product vocabulary (12,655 terms in the pinned snapshot). A recognized unseen food such as `Dragon Fruit` is accepted and sent through the same property-only preprocessing and classifier; the name is not a model feature. Nonsense names such as `jjjgjghghg` and `abcxyz123` return HTTP 422 before inference. The API reports unseen status and compares measured values with global training ranges; values beyond those spans receive an extrapolation warning. This marginal range check does not detect every unusual combination of otherwise in-range features.
 
-For mature-green bananas, the curated model class is a ventilated fiberboard carton with a PE liner, based on the sources documented in the source registry. Use the form's measured food and storage inputs; the preview starts at 13.5 °C, 90% RH, and 20 mL CO₂/kg·h as illustrative values. The result remains a prototype candidate that needs a specified carton/liner and package testing. A successful response includes `recommended_material`, `confidence` (always `null` in this prototype), `suitability`, `packaging_properties`, `important_features`, `explanation`, `alternatives`, warnings, input echo and model identity.
+For mature-green bananas, the curated model class is a ventilated fiberboard carton with a PE liner, based on the sources documented in the source registry. Use the form's measured food and storage inputs; the preview starts at 13.5 °C, 90% RH, and 20 mL CO₂/kg·h as illustrative values. The result remains a prototype candidate that needs a specified carton/liner and package testing. A successful response includes `recommended_material`, the raw predicted-class probability as `confidence` when the estimator provides it, `suitability`, `target_shelf_life_days`, `packaging_properties`, `important_features`, `explanation`, `alternatives`, warnings, input echo and model identity.
 
 Other endpoints:
 
@@ -122,7 +123,7 @@ Other endpoints:
 - `GET /api/materials` — qualitative packaging profiles with research links.
 - `GET /api/model-card` — actual training metadata, class counts, CV/holdout metrics and confusion matrix.
 
-Invalid/missing fields, unrecognized commodity names, impossible content sums and storage/temperature mismatches return HTTP 422. The backend validates names independently of the browser. The custom-food form accepts recognized FoodOn terms; a valid unseen name runs the same saved property-only pipeline and is returned with `prediction_scope: valid_unseen_commodity`. It has no commodity-specific application mapping, so the result remains a preliminary candidate for expert review, with no confidence or curated alternatives. Model/database load problems return HTTP 503; inference/server errors return structured JSON errors. CORS is configured from `PACKWISE_ALLOWED_ORIGINS`.
+Out-of-range values, unrecognized food names, impossible content sums and conflicting storage/temperature pairs return HTTP 422. Optional food and storage measurements may be left blank; they are sent as `null` and omitted from the suitability average. The backend validates names independently of the browser. Known FoodOn names and unseen names containing a recognized food term use `prediction_scope: valid_unseen_commodity` and follow the same property-based ranking. The response includes an estimated suitability score, data coverage, ranked alternatives and an estimated sustainability index. Sustainability is a limited design proxy, not a life-cycle assessment; package mass, regional recycling outcomes and measured food-loss reduction remain unavailable. Model inference failures fall back to the compatibility engine when the material database is loaded. CORS is configured from `PACKWISE_ALLOWED_ORIGINS`.
 
 ## Retraining
 
@@ -155,7 +156,7 @@ The website and API are deployed and connected to the private GitHub repository 
 - Vercel project root: `frontend`; `VITE_API_URL` points to the Render API.
 - Render runs the Python API from the repository root and allows the exact Vercel production origin through `PACKWISE_ALLOWED_ORIGINS`.
 
-Production flow: browser → Vercel website → HTTPS Render API → validation and preprocessing → saved classifier pipeline → separate suitability check and packaging database → JSON response to the website. Vercel and Render deploy from the existing GitHub `main` branch. Commit `1ef6ada` is live with model `prototype-2.0`; production health, CORS, valid unseen foods, invalid names and out-of-range warnings were checked on 2026-09-25. See [`docs/deployment.md`](docs/deployment.md) for the results.
+Production flow: browser → Vercel website → HTTPS Render API → validation → optional saved classifier prediction plus property-based compatibility ranking → ranked material profiles, estimated suitability, coverage, sustainability proxy and warnings. Vercel builds the frontend and Render builds the API from the existing GitHub `main` branch. Each release must be checked against both live endpoints; the current deployment record and checks are in [`docs/deployment.md`](docs/deployment.md).
 
 ## Limitations and future work
 

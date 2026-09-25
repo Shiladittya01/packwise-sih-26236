@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img">
+  <defs>
+    <linearGradient id="bag" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f7fffc" stop-opacity=".94"/><stop offset="1" stop-color="#a8d0c2" stop-opacity=".65"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.8"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#293c32" flood-opacity=".14"/></filter>
+  </defs>
+  <rect width="320" height="220" rx="18" fill="#f0f4ec"/>
+  <ellipse cx="160" cy="190" rx="73" ry="10" fill="#557462" opacity=".13"/>
+  <g filter="url(#shadow)">
+    <path d="M106 50h108l-7 119-13 10h-68l-13-10z" fill="url(#bag)" stroke="#789b8d"/>
+    <path d="M106 65h108m-105 8h102" stroke="#5f8b7e" stroke-width="3"/>
+    <path d="M119 89v65m83-63v70" stroke="#fff" stroke-width="3" opacity=".8"/>
+    <path d="m145 105 8 9-8 9 8 9-8 9m30-36-8 9 8 9-8 9 8 9" fill="none" stroke="#8db8ac" stroke-width="2"/>
+    <path d="M125 165h70" stroke="#8ea99c" stroke-width="2"/>
+    <text x="160" y="89" text-anchor="middle" fill="#638777" font-family="Arial,sans-serif" font-size="7" font-weight="700" letter-spacing="1">FREEZER-GRADE PE</text>
+  </g>
+</svg>

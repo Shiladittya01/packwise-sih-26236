@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img">
+  <defs>
+    <linearGradient id="sheet" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#f8fffb" stop-opacity=".9"/><stop offset="1" stop-color="#86b8a8" stop-opacity=".48"/></linearGradient>
+    <linearGradient id="roll" x1="0" x2="1"><stop stop-color="#bad6ca"/><stop offset=".5" stop-color="#f7fcf8"/><stop offset="1" stop-color="#8aa99a"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.8"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#293c32" flood-opacity=".14"/></filter>
+  </defs>
+  <rect width="320" height="220" rx="18" fill="#f0f4ec"/>
+  <ellipse cx="164" cy="187" rx="87" ry="11" fill="#557462" opacity=".12"/>
+  <g filter="url(#shadow)">
+    <path d="M127 45 228 59l-13 90-101-15z" fill="url(#sheet)" stroke="#6f9d8d" stroke-opacity=".55"/>
+    <path d="m138 53-10 75m81-61-11 75" stroke="#fff" stroke-width="4" opacity=".72"/>
+    <path d="m119 69 97 14m-101 5 96 14m-99 6 96 13" stroke="#d2e6dc" stroke-width="1.5" opacity=".9"/>
+    <rect x="64" y="119" width="150" height="47" rx="23" fill="url(#roll)" stroke="#789b8c"/>
+    <ellipse cx="86" cy="142" rx="22" ry="23" fill="#dce9e1" stroke="#789b8c"/>
+    <ellipse cx="86" cy="142" rx="9" ry="12" fill="#839f91"/>
+    <path d="M122 123v38" stroke="#fff" stroke-width="2" opacity=".65"/>
+  </g>
+  <text x="236" y="181" text-anchor="end" fill="#527160" font-family="Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="1.2">PE PRODUCE FILM</text>
+</svg>

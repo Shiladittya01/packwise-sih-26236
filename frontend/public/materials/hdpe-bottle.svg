@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img">
+  <defs>
+    <linearGradient id="bottle" x1="0" x2="1" y1="0" y2="0"><stop stop-color="#c9dfcf"/><stop offset=".34" stop-color="#f9fff9"/><stop offset=".68" stop-color="#e4f0e7"/><stop offset="1" stop-color="#a9cbb4"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.8"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#293c32" flood-opacity=".16"/></filter>
+  </defs>
+  <rect width="320" height="220" rx="18" fill="#f0f4ec"/>
+  <ellipse cx="160" cy="190" rx="52" ry="10" fill="#557462" opacity=".13"/>
+  <g filter="url(#shadow)">
+    <path d="M145 42h30v20l12 14v19l12 16v62q0 13-14 13h-50q-14 0-14-13v-62l12-16V76l12-14z" fill="url(#bottle)" stroke="#71917d" stroke-width="1.4"/>
+    <path d="M143 43h34v14h-34z" rx="3" fill="#729879" stroke="#55755f"/>
+    <path d="M139 87h42m-52 22h62" stroke="#fff" stroke-width="3" opacity=".74"/>
+    <path d="M133 121v39q0 11 8 13m45-70v59" fill="none" stroke="#fff" stroke-width="3" opacity=".62"/>
+    <rect x="131" y="116" width="58" height="34" rx="5" fill="#e7efe5" stroke="#b4cbbb"/>
+    <text x="160" y="130" text-anchor="middle" fill="#567962" font-family="Arial,sans-serif" font-size="7" font-weight="700" letter-spacing="1">HDPE</text>
+    <text x="160" y="141" text-anchor="middle" fill="#789182" font-family="Arial,sans-serif" font-size="6">BOTTLE + CLOSURE</text>
+  </g>
+</svg>

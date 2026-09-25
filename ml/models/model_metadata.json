@@ -472,6 +472,6 @@
     "Metrics quantify how well candidate estimators reproduce this synthetic rule grid; they are not real-food accuracy or scientific validation.",
     "The structured grid contains one demonstration nutrient/pH center for several commodities; changed real measurements may be outside the training distribution.",
     "Mature-green bananas have one curated target class in the current grid, so the model does not compare competing banana package classes or learn banana-specific material tradeoffs.",
-    "No confidence percentage is displayed because class probabilities are not calibrated against experimental outcomes."
+    "The API displays the estimator's raw predicted-class probability when available; it is not calibrated against experimental package outcomes."
   ]
 }

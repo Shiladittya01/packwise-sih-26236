@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img">
+  <defs>
+    <linearGradient id="film" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fafffd" stop-opacity=".94"/><stop offset="1" stop-color="#d4e4dc" stop-opacity=".84"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.8"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#293c32" flood-opacity=".14"/></filter>
+  </defs>
+  <rect width="320" height="220" rx="18" fill="#f0f4ec"/>
+  <ellipse cx="160" cy="190" rx="60" ry="10" fill="#557462" opacity=".13"/>
+  <g filter="url(#shadow)">
+    <path d="M116 43h88l-4 22 13 103-17 16h-73l-17-16 13-103z" fill="url(#film)" stroke="#839b8e"/>
+    <path d="M116 56h88m-92 13h96m-95 88h94" stroke="#9db8aa" stroke-width="3"/>
+    <path d="M123 76v76m75-76v76" stroke="#fff" stroke-width="3" opacity=".82"/>
+    <path d="m123 168 37-10 37 10-7 8h-60z" fill="#c4d8ce" stroke="#839b8e"/>
+    <path d="M133 50v6m54-6v6" stroke="#fff" stroke-width="2"/>
+    <text x="160" y="116" text-anchor="middle" fill="#648775" font-family="Arial,sans-serif" font-size="8" font-weight="700" letter-spacing="1">BOPP / CPP</text>
+  </g>
+</svg>

@@ -29,17 +29,23 @@ The model, preprocessing pipeline, packaging database and FoodOn name-reference 
 - Build and output: `npm run build`, `dist`, configured in `frontend/vercel.json`.
 - Environment: `VITE_API_URL=https://packwise-api-26236.onrender.com` for Production and Preview.
 
-## Production flow and verification
+## Release and post-deployment checks
 
-Browser → Vercel website → HTTPS Render API → validation and preprocessing → saved property-only supervised model → separate suitability check → packaging database → JSON response → website.
+Production flow: Browser → Vercel frontend → HTTPS Render API → request validation → optional saved Gradient Boosting prediction plus property-based compatibility ranking → JSON estimate and explanation → browser result view. Model class and compatibility recommendation are separate outputs. Suitability is a weighted estimate from available inputs and ordinal material profiles; coverage reports evidence availability. Sustainability is a limited design proxy, not an LCA.
 
-Commit `1ef6ada` was pushed to the existing `main` branch on 2026-09-25, and both providers deployed it. Live verification confirmed:
+Vercel builds the frontend and Render builds the API from GitHub `main`. This release does not require a Vercel build, root-directory, rewrite or API URL change. It does not require a Render start-command, Python dependency or environment-variable change; the existing `render.yaml` service already runs the backend from the repository root. Pushing frontend, backend, material database and documentation changes to `main` starts the connected provider deployments.
 
-- The Vercel site returned HTTP 200; its JavaScript points to the Render API and contains `Built by 4Bit-Coders`.
-- The Render `/api/health` endpoint returned HTTP 200 with model `prototype-2.0`, 331 training rows, eight features, `commodity_name_used_by_model: false`, and the 12,655-term FoodOn reference.
-- The Vercel-origin CORS preflight returned HTTP 200 with the exact allowed origin.
-- Direct production requests for Apple, Banana and Dragon Fruit returned HTTP 200. Dragon Fruit was marked `valid_unseen_commodity` and returned a preliminary model candidate.
-- `custom:jjjgjghghg` and `abcxyz123` returned HTTP 422 without a material result. Invalid pH and humidity also returned HTTP 422.
-- A valid Dragon Fruit profile outside the training feature ranges returned HTTP 200 with extrapolation warnings.
+After each release, verify both services:
 
-If the Vercel production hostname changes, update `PACKWISE_ALLOWED_ORIGINS` in Render to that exact origin and redeploy/restart the API. If the Render hostname changes, update Vercel's `VITE_API_URL` and redeploy the frontend.
+1. Open the public Vercel site and confirm the updated result labels, data-coverage display, dynamic reasons and material illustrations load.
+2. Confirm `GET /api/health` returns HTTP 200 with the model loaded. The recommendation endpoint can fall back to compatibility ranking if model inference fails, but health remains HTTP 503 when the model is unavailable.
+3. Send known-food and valid custom/unseen-food requests to `POST /api/recommend`; confirm each returns finite suitability and sustainability scores from 0 to 100, a material recommendation, an explanation and data coverage.
+4. Confirm invalid food names and invalid physical inputs still return HTTP 422, and check the Vercel-origin CORS response.
+
+Record the release commit and results of the live checks here after deployment:
+
+| Release commit | Deployment check | Result |
+| --- | --- | --- |
+| Record after push | Vercel website and Render API | Record after verification |
+
+If the Vercel production hostname changes, update `PACKWISE_ALLOWED_ORIGINS` in Render and redeploy/restart the API. If the Render hostname changes, update Vercel's `VITE_API_URL` and redeploy the frontend.

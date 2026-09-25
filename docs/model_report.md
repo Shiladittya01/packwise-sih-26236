@@ -162,7 +162,7 @@ The commodity name is not a model feature. The API validates it against the bund
 
 ## Explainability and confidence
 
-Feature importance method: tree impurity importance aggregated by source feature. The API labels these as global model importance, not causal effects for a specific food. SHAP was not needed for this small, rule-labelled prototype. Probabilities are intentionally not shown as user confidence because the class labels are synthetic and no experimental calibration set exists.
+Feature importance method: tree impurity importance aggregated by source feature. The API labels these as global model importance, not causal effects for a specific food. SHAP was not needed for this small, rule-labelled prototype. The result shows the estimator's raw predicted-class probability separately from suitability; that probability is not calibrated against experimental package outcomes and is not a scientific certainty.
 
 ## Limitations
 
@@ -170,4 +170,4 @@ Feature importance method: tree impurity importance aggregated by source feature
 - Metrics quantify how well candidate estimators reproduce this synthetic rule grid; they are not real-food accuracy or scientific validation.
 - The structured grid contains one demonstration nutrient/pH center for several commodities; changed real measurements may be outside the training distribution.
 - Mature-green bananas have one curated target class in the current grid, so the model does not compare competing banana package classes or learn banana-specific material tradeoffs.
-- No confidence percentage is displayed because class probabilities are not calibrated against experimental outcomes.
+- The API displays the estimator's raw predicted-class probability when available; it is not calibrated against experimental package outcomes.

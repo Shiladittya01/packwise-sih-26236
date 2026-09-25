@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" role="img">
+  <defs>
+    <linearGradient id="metal" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#e6e9e1"/><stop offset=".28" stop-color="#fff"/><stop offset=".55" stop-color="#bfc7c2"/><stop offset=".78" stop-color="#f8faf6"/><stop offset="1" stop-color="#9ba9a3"/></linearGradient>
+    <linearGradient id="edge" x1="0" x2="1"><stop stop-color="#83958b"/><stop offset=".5" stop-color="#edf1ec"/><stop offset="1" stop-color="#879990"/></linearGradient>
+    <filter id="shadow" x="-.3" y="-.3" width="1.6" height="1.8"><feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="#293c32" flood-opacity=".16"/></filter>
+  </defs>
+  <rect width="320" height="220" rx="18" fill="#f0f4ec"/>
+  <ellipse cx="160" cy="189" rx="65" ry="10" fill="#557462" opacity=".13"/>
+  <g filter="url(#shadow)">
+    <path d="M111 45h98l-7 112-14 13h-56l-14-13z" fill="url(#metal)" stroke="#8d9c95"/>
+    <path d="M111 56h98m-99 9h97M119 157h82" stroke="url(#edge)" stroke-width="4"/>
+    <path d="M127 53v103m67-103v103" stroke="#fff" stroke-width="2" opacity=".7"/>
+    <path d="m120 169 22-11h41l20 11-9 8h-65z" fill="#aab6b0" stroke="#85968d"/>
+    <path d="M145 81h30" stroke="#fff" stroke-width="3" opacity=".75"/>
+    <rect x="122" y="91" width="76" height="31" rx="5" fill="#426c58" opacity=".9"/>
+    <text x="160" y="104" text-anchor="middle" fill="#f4f7ef" font-family="Arial,sans-serif" font-size="7" font-weight="700" letter-spacing="1">METALLIZED</text>
+    <text x="160" y="115" text-anchor="middle" fill="#d8e7d5" font-family="Arial,sans-serif" font-size="6">FLEXIBLE LAMINATE</text>
+  </g>
+</svg>
