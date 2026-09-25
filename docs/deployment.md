@@ -42,10 +42,12 @@ After each release, verify both services:
 3. Send known-food and valid custom/unseen-food requests to `POST /api/recommend`; confirm each returns finite suitability and sustainability scores from 0 to 100, a material recommendation, an explanation and data coverage.
 4. Confirm invalid food names and invalid physical inputs still return HTTP 422, and check the Vercel-origin CORS response.
 
-Record the release commit and results of the live checks here after deployment:
+Production verification recorded on 25 September 2026:
 
 | Release commit | Deployment check | Result |
 | --- | --- | --- |
-| Record after push | Vercel website and Render API | Record after verification |
+| `e66671038dec774e6805c0a29734e9a5fb6f2146` (`feat: ship estimated packaging recommendations`) | Vercel production deployment | Ready at https://packwise-sih-26236.vercel.app |
+| `e66671038dec774e6805c0a29734e9a5fb6f2146` | Render `packwise-api-26236` | Deployed and live; `/api/health` returned HTTP 200 with the model loaded |
+| `e66671038dec774e6805c0a29734e9a5fb6f2146` | Production API and browser smoke checks | `Milk`: HDPE bottle, 91% estimated suitability, 68% estimated sustainability index, 57% suitability coverage. `Homemade Pickle` with measured properties and omitted respiration/shelf-life fields: metallized flexible laminate, 69% estimated suitability, 38% estimated sustainability index, 44% suitability coverage. The public website displayed the custom-food result, material explanation, missing-data coverage and sustainability limitations. |
 
 If the Vercel production hostname changes, update `PACKWISE_ALLOWED_ORIGINS` in Render and redeploy/restart the API. If the Render hostname changes, update Vercel's `VITE_API_URL` and redeploy the frontend.
